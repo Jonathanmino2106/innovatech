@@ -1,0 +1,91 @@
+/* INNOVATECH - PASAPORTE.26 Design System */
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0.75rem);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Grilla sutil sobre fondos azul oscuro #0f2742 */
+.bg-grid-tech {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Cuadrícula de fondo del mapa claro */
+.map-canvas-grid {
+  background-color: #f1f7f9;
+  background-image: 
+    linear-gradient(#e0edee 1px, transparent 1px),
+    linear-gradient(90deg, #e0edee 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+/* Rebote sutil de pin pendiente */
+@keyframes pinBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-pin-bounce {
+  animation: pinBounce 2s infinite ease-in-out;
+}
+
+/* Escáner de visor láser */
+@keyframes scanSweep {
+  0% {
+    top: 6%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 92%;
+    opacity: 1;
+  }
+  100% {
+    top: 6%;
+    opacity: 0.8;
+  }
+}
+
+.animate-scan-sweep {
+  animation: scanSweep 2s infinite ease-in-out;
+}
+
+/* Vibración de error */
+@keyframes shakeInvalid {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: shakeInvalid 0.35s ease-in-out;
+}
+
+/* Toast flotante inferior */
+.toast-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
