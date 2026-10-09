@@ -14,6 +14,7 @@ import { createMapView } from './views/mapView.js';
 import { createQrView } from './views/qrView.js';
 import { createPassportView } from './views/passportView.js';
 import { createRanksView } from './views/ranksView.js';
+import { createStatsView } from './views/statsView.js';
 
 import { STAND_01_INFO, renderStand01 } from './views/stands/stand01.js';
 import { STAND_02_INFO, renderStand02 } from './views/stands/stand02.js';
@@ -206,7 +207,7 @@ class AppRouter {
           const key = standObj ? standObj.id : v.stand_codigo;
           this.state.stamps[key] = {
             unlocked: true,
-            triviaCorrecta: v.trivia_correcta,
+            valoracion: v.valoracion ?? null,
             unlockedAt: v.fecha_visita
           };
         });
@@ -219,16 +220,15 @@ class AppRouter {
 
   // Registrar un sello obtenido (en Supabase y localStorage)
   // metodoIngreso: 'qr' | 'manual'  (columna metodo_ingreso de visitas_estaciones)
-  // triviaCorrecta: resultado real de la trivia (columna trivia_correcta)
-  async unlockStamp(standId, metodoIngreso = 'manual', triviaCorrecta = false) {
+  async unlockStamp(standId, metodoIngreso = 'manual') {
     if (this.state.stamps[standId]) return false;
 
     const metodo = metodoIngreso === 'qr' ? 'qr' : 'manual';
 
     const stampData = {
       unlocked: true,
-      triviaCorrecta,
       metodoIngreso: metodo,
+      valoracion: null,
       unlockedAt: new Date().toISOString()
     };
 
@@ -259,7 +259,6 @@ class AppRouter {
             usuario_id: this.state.user.id,
             stand_codigo: standObj ? standObj.code : standId,
             metodo_ingreso: metodo,
-            trivia_correcta: triviaCorrecta,
             fecha_visita: stampData.unlockedAt
           }]);
 
@@ -278,6 +277,30 @@ class AppRouter {
 
   isStandCompleted(standId) {
     return !!(this.state.stamps[standId] && this.state.stamps[standId].unlocked);
+  }
+
+  // Valorar una estación con 1-5 estrellas (columna valoracion de visitas_estaciones)
+  async rateStamp(standId, stars) {
+    const stamp = this.state.stamps[standId];
+    if (!stamp || !stars || stars < 1 || stars > 5) return;
+
+    stamp.valoracion = stars;
+    this.saveLocalState();
+
+    if (supabase && this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+      const standObj = this.standsList.find(s => s.id === standId);
+      try {
+        await supabase
+          .from('visitas_estaciones')
+          .update({ valoracion: stars })
+          .eq('usuario_id', this.state.user.id)
+          .eq('stand_codigo', standObj ? standObj.code : standId);
+      } catch (e) {
+        console.warn("Aviso al persistir valoración:", e);
+      }
+    }
+
+    this.showToast(`Valoración guardada: ${stars}/5`);
   }
 
   getCompletedCount() {
@@ -328,6 +351,8 @@ class AppRouter {
       viewElement = createPassportView(this);
     } else if (this.currentRoute === "ranks") {
       viewElement = createRanksView(this);
+    } else if (this.currentRoute === "stats") {
+      viewElement = createStatsView(this);
     } else if (this.standsMap[this.currentRoute]) {
       viewElement = this.standsMap[this.currentRoute].render(this);
     } else {

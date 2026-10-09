@@ -98,8 +98,19 @@ export function createQrView(app, targetStandId = null) {
           <span>Sello guardado</span>
         </div>
         <p class="text-xs text-emerald-700 leading-snug">
-          Sello activado en modo demostración. Puedes continuar tu ruta.
+          Sello activado. Puedes continuar tu ruta.
         </p>
+
+        <!-- Valoración por estrellas (1-5) -->
+        <div class="pt-2 border-t border-emerald-200">
+          <p class="text-[11px] font-bold text-emerald-800 mb-2">¿Cómo fue tu experiencia en esta estación?</p>
+          <div id="rate-stars" class="flex items-center gap-1.5">
+            ${[1, 2, 3, 4, 5].map(n => `
+              <button data-stars="${n}" class="star-btn w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-all border bg-white border-emerald-200 text-amber-400 hover:bg-amber-50">★</button>
+            `).join("")}
+          </div>
+        </div>
+
         <button id="btn-goto-passport" class="w-full bg-white hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
           <span>Ver mi pasaporte</span>
           <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
@@ -136,9 +147,7 @@ export function createQrView(app, targetStandId = null) {
   });
 
   function completeStamp(stand, metodo = 'manual') {
-    // triviaCorrecta se registrará como true en Fase B, cuando la trivia
-    // sea obligatoria antes de sellar. Por ahora se guarda el dato real (false).
-    app.unlockStamp(stand.id, metodo, false);
+    app.unlockStamp(stand.id, metodo);
     boxSuccess.classList.remove("hidden");
     app.showToast(`Sello obtenido: ${stand.name}`);
     if (window.lucide) window.lucide.createIcons();
@@ -177,6 +186,30 @@ export function createQrView(app, targetStandId = null) {
   container.querySelector("#btn-goto-passport").addEventListener("click", () => {
     app.navigate("passport");
   });
+
+  // Valoración por estrellas (1-5) → persiste en visitas_estaciones.valoracion
+  const starBtns = container.querySelectorAll("#rate-stars .star-btn");
+
+  function paintStars(n) {
+    starBtns.forEach((b) => {
+      const val = parseInt(b.getAttribute("data-stars"), 10);
+      b.className = val <= n
+        ? "star-btn w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-all border bg-amber-400 border-amber-500 text-white shadow-sm"
+        : "star-btn w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-all border bg-white border-emerald-200 text-amber-400 hover:bg-amber-50";
+    });
+  }
+
+  starBtns.forEach((b) => {
+    b.addEventListener("click", async () => {
+      const n = parseInt(b.getAttribute("data-stars"), 10);
+      await app.rateStamp(currentStand.id, n);
+      paintStars(n);
+    });
+  });
+
+  // Restaurar valoración previa si existe
+  const prevRating = app.state.stamps[currentStand.id]?.valoracion;
+  if (prevRating) paintStars(prevRating);
 
   return container;
 }

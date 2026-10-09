@@ -58,6 +58,12 @@ export function createHeader(app) {
         <i data-lucide="trophy" class="w-3.5 h-3.5"></i>
         <span>Rangos</span>
       </button>
+      <button data-nav-route="stats" class="px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all ${
+        app.currentRoute === 'stats' ? 'font-bold text-cyan-400 bg-cyan-950/80' : 'hover:text-white hover:bg-slate-800'
+      }">
+        <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
+        <span>Estadísticas</span>
+      </button>
     </nav>
 
     <!-- Botón Superior "Validar visita" -->

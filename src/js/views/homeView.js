@@ -108,7 +108,7 @@ export function createHomeView(app) {
         </button>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Explorar mapa -->
         <button id="action-map" class="bg-white p-5 rounded-2xl border border-slate-200/80 hover:border-cyan-300 shadow-sm text-left active:scale-[0.98] transition-all group">
           <div class="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-3 group-hover:bg-cyan-100 transition-colors">
@@ -135,6 +135,15 @@ export function createHomeView(app) {
           <h4 class="text-xs font-bold text-slate-900">Validar QR</h4>
           <p class="text-[11px] text-slate-500 mt-1 leading-snug">Activa un sello al llegar físicamente a un stand.</p>
         </button>
+
+        <!-- Ver estadísticas -->
+        <button id="action-stats" class="bg-white p-5 rounded-2xl border border-slate-200/80 hover:border-cyan-300 shadow-sm text-left active:scale-[0.98] transition-all group">
+          <div class="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-3 group-hover:bg-teal-100 transition-colors">
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          </div>
+          <h4 class="text-xs font-bold text-slate-900">Ver estadísticas</h4>
+          <p class="text-[11px] text-slate-500 mt-1 leading-snug">Gráficos de visitas y valoraciones en vivo.</p>
+        </button>
       </div>
     </div>
   `;
@@ -154,6 +163,9 @@ export function createHomeView(app) {
   });
   container.querySelector("#action-qr").addEventListener("click", () => {
     app.navigateQr(nextStand.id);
+  });
+  container.querySelector("#action-stats").addEventListener("click", () => {
+    app.navigate("stats");
   });
 
   return container;
