@@ -1,0 +1,10 @@
+# Variables de entorno (credenciales de Supabase)
+.env
+.env.local
+
+# Dependencias
+node_modules/
+
+# Sistema
+Thumbs.db
+.DS_Store

@@ -1,0 +1,11 @@
+{
+  "name": "innovatech",
+  "version": "1.0.0",
+  "description": "PASAPORTE.26 | Feria Tecnológica",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "start": "node build.js && node server.js",
+    "dev": "node build.js && node server.js"
+  }
+}

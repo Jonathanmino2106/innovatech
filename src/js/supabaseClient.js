@@ -1,7 +1,11 @@
 // src/js/supabaseClient.js
+// Conexión segura a Supabase mediante variables de entorno (ver build.js y .env.example).
+// Las credenciales NUNCA se escriben a mano en este archivo.
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_CONFIGURED } from './config.js';
 
-const SUPABASE_URL = 'https://mrglvycsojxumkdbsmks.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_ZjE4lN1OBfPVP_lwGgWuNw_hpsUSfb2';
+// Si no hay credenciales configuradas, el cliente queda en null y la app
+// opera en modo solo-local (localStorage) sin romperse.
+export const supabase = SUPABASE_CONFIGURED ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const isSupabaseConfigured = SUPABASE_CONFIGURED;

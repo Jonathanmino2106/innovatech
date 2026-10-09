@@ -3,6 +3,8 @@
  * Muestra el rango actual, desafíos resueltos, avance de la ruta y la grilla con los 5 stands.
  */
 
+import { getRankTitle } from '../ranks.js';
+
 export function createPassportView(app) {
   const container = document.createElement("div");
   container.className = "w-full max-w-5xl px-4 py-6 md:py-8 space-y-6 pb-24 md:pb-12";
@@ -12,11 +14,8 @@ export function createPassportView(app) {
   const completed = stands.filter(s => app.isStandCompleted(s.id)).length;
   const percent = Math.round((completed / total) * 100);
 
-  let rankTitle = "VISITANTE";
-  if (percent >= 100) rankTitle = "VISIONARIO";
-  else if (percent >= 80) rankTitle = "PIONERO";
-  else if (percent >= 40) rankTitle = "DESCUBRIDOR";
-  else if (percent >= 20) rankTitle = "EXPLORADOR";
+  // Rango alcanzado (módulo único de verdad: ranks.js)
+  const rankTitle = getRankTitle(completed);
 
   container.innerHTML = `
     <!-- Cabecera del Pasaporte (vista-pasaporte.png) -->

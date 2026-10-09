@@ -135,15 +135,18 @@ export function createQrView(app, targetStandId = null) {
     panelCam.classList.add("hidden");
   });
 
-  function completeStamp(stand) {
-    app.unlockStamp(stand.id);
+  function completeStamp(stand, metodo = 'manual') {
+    // triviaCorrecta se registrará como true en Fase B, cuando la trivia
+    // sea obligatoria antes de sellar. Por ahora se guarda el dato real (false).
+    app.unlockStamp(stand.id, metodo, false);
     boxSuccess.classList.remove("hidden");
     app.showToast(`Sello obtenido: ${stand.name}`);
     if (window.lucide) window.lucide.createIcons();
   }
 
   container.querySelector("#btn-use-demo").addEventListener("click", () => {
-    completeStamp(currentStand);
+    // Simula el escaneo con cámara → método 'qr' (alimenta el gráfico de dona)
+    completeStamp(currentStand, 'qr');
   });
 
   container.querySelector("#btn-quick-fill").addEventListener("click", () => {
@@ -154,7 +157,8 @@ export function createQrView(app, targetStandId = null) {
     const val = inputCode.value.trim().toUpperCase();
     const found = stands.find(s => s.code.toUpperCase() === val);
     if (found) {
-      completeStamp(found);
+      // Plan B: ingreso manual alfanumérico → método 'manual'
+      completeStamp(found, 'manual');
     } else {
       inputCode.classList.add("animate-shake", "border-rose-500");
       app.showToast("Código no válido. Prueba con " + currentStand.code);

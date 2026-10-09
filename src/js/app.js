@@ -6,6 +6,7 @@
  */
 
 import { supabase } from './supabaseClient.js';
+import { getRankTitle } from './ranks.js';
 import { createHeader, createBottomNavbar } from '../components/navbar.js';
 import { createCreaPasaporteView } from './views/loginView.js';
 import { createHomeView } from './views/homeView.js';
@@ -93,13 +94,23 @@ class AppRouter {
 
     const newUserPayload = {
       nickname: nickname.trim(),
+      curso: grade ? grade.trim() : null,
       codigo_pasaporte,
       rango_actual: "Visitante",
       progreso: 0,
-      creado_en: new Date().toISOString()
+      fecha_creacion: new Date().toISOString()
     };
 
     let savedUser = null;
+
+    if (!supabase) {
+      savedUser = { id: `local-${Date.now()}`, ...newUserPayload, passportCode: codigo_pasaporte };
+      this.state.user = savedUser;
+      this.state.stamps = {};
+      this.saveLocalState();
+      this.showToast(`Pasaporte local: ${codigo_pasaporte} (sin nube)`);
+      return this.state.user;
+    }
 
     try {
       const { data, error } = await supabase
@@ -132,11 +143,13 @@ class AppRouter {
     const cleanCode = code.trim().toUpperCase();
 
     try {
-      const { data, error } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('codigo_pasaporte', cleanCode)
-        .maybeSingle();
+      const { data, error } = supabase
+        ? await supabase
+            .from('usuarios')
+            .select('*')
+            .eq('codigo_pasaporte', cleanCode)
+            .maybeSingle()
+        : { data: null, error: null };
 
       if (data && !error) {
         this.state.user = { ...data, passportCode: data.codigo_pasaporte };
@@ -178,7 +191,7 @@ class AppRouter {
 
   // Cargar visitas registradas de la tabla visitas_estaciones
   async loadVisitsFromSupabase(userId) {
-    if (!userId || String(userId).startsWith("local-")) return;
+    if (!supabase || !userId || String(userId).startsWith("local-")) return;
 
     try {
       const { data, error } = await supabase
@@ -188,9 +201,9 @@ class AppRouter {
 
       if (data && !error) {
         data.forEach(v => {
-          // Identificar el stand correspondiente por código o id
-          const standObj = this.standsList.find(s => s.id === v.stand_id || s.code === v.stand_id);
-          const key = standObj ? standObj.id : v.stand_id;
+          // El stand se identifica por su código único (ej. STAND01)
+          const standObj = this.standsList.find(s => s.code === v.stand_codigo);
+          const key = standObj ? standObj.id : v.stand_codigo;
           this.state.stamps[key] = {
             unlocked: true,
             triviaCorrecta: v.trivia_correcta,
@@ -205,28 +218,28 @@ class AppRouter {
   }
 
   // Registrar un sello obtenido (en Supabase y localStorage)
-  async unlockStamp(standId, tipoIngreso = 'manual', triviaCorrecta = true) {
+  // metodoIngreso: 'qr' | 'manual'  (columna metodo_ingreso de visitas_estaciones)
+  // triviaCorrecta: resultado real de la trivia (columna trivia_correcta)
+  async unlockStamp(standId, metodoIngreso = 'manual', triviaCorrecta = false) {
     if (this.state.stamps[standId]) return false;
+
+    const metodo = metodoIngreso === 'qr' ? 'qr' : 'manual';
 
     const stampData = {
       unlocked: true,
       triviaCorrecta,
+      metodoIngreso: metodo,
       unlockedAt: new Date().toISOString()
     };
 
     this.state.stamps[standId] = stampData;
     this.saveLocalState();
 
-    // Calcular progreso
+    // Calcular progreso y rango (módulo único de verdad: ranks.js)
     const total = this.standsList.length;
     const completed = this.getCompletedCount();
     const progreso = Math.round((completed / total) * 100);
-
-    let rango_actual = "Visitante";
-    if (progreso >= 100) rango_actual = "Visionario";
-    else if (progreso >= 80) rango_actual = "Pionero";
-    else if (progreso >= 40) rango_actual = "Descubridor";
-    else if (progreso >= 20) rango_actual = "Explorador";
+    const rango_actual = getRankTitle(completed);
 
     if (this.state.user) {
       this.state.user.progreso = progreso;
@@ -234,15 +247,18 @@ class AppRouter {
       this.saveLocalState();
     }
 
-    // Persistir visita en Supabase si el usuario tiene ID
-    if (this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+    // Persistir visita en Supabase si el usuario tiene ID real (no local)
+    if (supabase && this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+      // El stand viaja por su código único (FK a stands.id_stand, ej. STAND01)
+      const standObj = this.standsList.find(s => s.id === standId);
+
       try {
         await supabase
           .from('visitas_estaciones')
           .insert([{
             usuario_id: this.state.user.id,
-            stand_id: standId,
-            tipo_ingreso: tipoIngreso,
+            stand_codigo: standObj ? standObj.code : standId,
+            metodo_ingreso: metodo,
             trivia_correcta: triviaCorrecta,
             fecha_visita: stampData.unlockedAt
           }]);

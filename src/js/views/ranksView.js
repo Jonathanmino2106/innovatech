@@ -1,15 +1,12 @@
 /**
  * INNOVATECH - Vista de Rangos y Logros (vista-rangos.png)
  * Muestra el listado de rangos alcanzables y logros especiales desbloqueables.
+ * Los rangos se importan del módulo único de verdad: src/js/ranks.js
  */
 
-export const RANKS_DATA = [
-  { threshold: 0, title: "VISITANTE", minStamps: 0, desc: "Recién empieza tu recorrido." },
-  { threshold: 1, title: "EXPLORADOR", minStamps: 1, desc: "Ya descubriste nuevas ideas en la feria." },
-  { threshold: 2, title: "DESCUBRIDOR", minStamps: 2, desc: "Tu curiosidad te está llevando lejos." },
-  { threshold: 3, title: "PIONERO", minStamps: 3, desc: "Casi completaste toda la feria de robótica." },
-  { threshold: 5, title: "VISIONARIO", minStamps: 5, desc: "Exploraste los 5 stands como una persona visionaria." }
-];
+import { RANKS_DATA, getCurrentRank, isRankUnlocked } from '../ranks.js';
+
+export { RANKS_DATA };
 
 export const ACHIEVEMENTS_DATA = [
   { id: "ach-1", title: "Primera señal", desc: "Completaste tu primera estación", icon: "scan", condition: (c) => c >= 1 },
@@ -35,8 +32,8 @@ export function createRanksView(app) {
     <!-- Lista Vertical de Rangos -->
     <div class="space-y-3">
       ${RANKS_DATA.map(rank => {
-        const isUnlocked = completed >= rank.minStamps;
-        const currentRank = RANKS_DATA.slice().reverse().find(r => completed >= r.minStamps) || RANKS_DATA[0];
+        const isUnlocked = isRankUnlocked(rank, completed);
+        const currentRank = getCurrentRank(completed);
         const isCurrent = currentRank.title === rank.title;
 
         return `

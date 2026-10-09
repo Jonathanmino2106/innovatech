@@ -3,6 +3,8 @@
  * Basada exactamente en panel-recorrido.png (Tarjeta hero de progreso, siguiente estación y tablero).
  */
 
+import { getRankTitle } from '../ranks.js';
+
 export function createHomeView(app) {
   const container = document.createElement("div");
   container.className = "w-full max-w-5xl px-4 py-6 md:py-8 space-y-6 pb-24 md:pb-12";
@@ -13,12 +15,8 @@ export function createHomeView(app) {
   const completed = app.getCompletedCount();
   const percent = Math.round((completed / total) * 100);
 
-  // Rango alcanzado
-  let rankTitle = user.rango_actual || "VISITANTE";
-  if (percent >= 100) rankTitle = "VISIONARIO";
-  else if (percent >= 80) rankTitle = "PIONERO";
-  else if (percent >= 40) rankTitle = "DESCUBRIDOR";
-  else if (percent >= 20) rankTitle = "EXPLORADOR";
+  // Rango alcanzado (módulo único de verdad: ranks.js)
+  const rankTitle = getRankTitle(completed);
 
   // Siguiente estación recomendada (primer stand pendiente o stand-01)
   const nextStand = stands.find(s => !app.isStandCompleted(s.id)) || stands[0];
