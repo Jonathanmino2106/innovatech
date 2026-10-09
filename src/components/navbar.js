@@ -68,7 +68,7 @@ export function createHeader(app) {
 
     <!-- Botón Superior "Validar visita" -->
     <div class="flex items-center gap-2">
-      <button id="btn-header-validate" class="bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-semibold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
+      <button id="btn-header-validate" class="min-h-11 bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-semibold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
         <i data-lucide="scan" class="w-3.5 h-3.5"></i>
         <span>Validar visita</span>
       </button>

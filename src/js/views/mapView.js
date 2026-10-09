@@ -111,7 +111,7 @@ export function createMapView(app) {
           <span id="card-stand-location" class="truncate">Pabellón A · Entrada Oeste</span>
         </div>
 
-        <button id="btn-open-stand-page" class="w-full bg-[#132840] hover:bg-[#0a1827] active:scale-95 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-1.5 text-xs transition-all shadow-sm">
+        <button id="btn-open-stand-page" class="w-full min-h-12 bg-[#132840] hover:bg-[#0a1827] active:scale-95 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-1.5 text-xs transition-all shadow-sm">
           <span>Ver estación</span>
           <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
         </button>

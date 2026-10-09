@@ -55,7 +55,7 @@ export function createStandView(app, info) {
             </p>
           </div>
 
-          <button id="btn-scan-qr" class="w-full ${
+          <button id="btn-scan-qr" class="w-full min-h-12 ${
             isCompleted
               ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
               : 'bg-[#13b8d4] hover:bg-[#0ea5be] text-white'

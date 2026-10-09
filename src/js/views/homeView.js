@@ -87,7 +87,7 @@ export function createHomeView(app) {
           </div>
         </div>
 
-        <button id="btn-open-next" class="w-full mt-6 bg-[#132840] hover:bg-[#0a1827] active:scale-95 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-1.5 text-xs transition-all shadow-sm">
+        <button id="btn-open-next" class="w-full min-h-12 mt-6 bg-[#132840] hover:bg-[#0a1827] active:scale-95 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-1.5 text-xs transition-all shadow-sm">
           <span>Abrir estación</span>
           <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
         </button>
