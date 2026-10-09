@@ -4,31 +4,52 @@ Aplicación web SPA ligera desarrollada para la feria de robótica INNOVATECH ut
 
 ---
 
-## 📂 Estructura del Proyecto en `C:\Proyectos_Joni\innovatech`
+## 📂 Estructura del Proyecto
 
 ```text
-C:\Proyectos_Joni\innovatech\
+innovatech\
 ├── index.html                     # Contenedor raíz con <div id="app"> y script type="module"
+├── build.js                       # Genera src/js/config.js desde .env / variables de Vercel
+├── schema.sql                     # FUENTE DE VERDAD de la base de datos (ejecutar en Supabase)
+├── .env.example                   # Plantilla de variables de entorno (copiar a .env)
+├── server.js                      # Servidor estático local sin dependencias
 ├── src\
 │   ├── components\
-│   │   └── navbar.js              # Barra inferior fija (Home, QR flotante, Mapa)
+│   │   └── navbar.js              # Header superior + navbar inferior móvil
 │   ├── css\
 │   │   └── styles.css             # Animación láser de escaneo, rebote de pines, toast y grid
 │   └── js\
-│       ├── app.js                 # Enrutador central y gestión de estado global (LocalStorage)
+│       ├── app.js                 # Enrutador central y gestión de estado global
+│       ├── config.js              # GENERADO por build.js (credenciales Supabase, no editar)
+│       ├── ranks.js               # Módulo Único de verdad de rangos (gamificación)
+│       ├── supabaseClient.js      # Cliente Supabase (lee de config.js)
 │       └── views\
 │           ├── loginView.js       # Registro de nickname/curso y recuperación de código
-│           ├── homeView.js        # Panel de control, barra 0-100%, rango y lista de stands
+│           ├── homeView.js        # Panel de control, barra 0-100%, rango y accesos rápidos
 │           ├── mapView.js         # Plano esquemático con los 5 pines interactivos
 │           ├── qrView.js          # Visor de cámara y solapa Plan B (código manual)
+│           ├── passportView.js    # Colección de sellos y avance de la ruta
+│           ├── ranksView.js       # Rangos alcanzables y logros desbloqueables
 │           └── stands\
 │               ├── stand01.js     # Stand 01: Robótica Industrial & Brazos Articulados
 │               ├── stand02.js     # Stand 02: Drones Autónomos & Visión Espacial
-│               ├── stand03.js     # Stand 03: Robots Móviles & Vehículos Autónomos (AGV/AMR)
+│               ├── stand03.js     # Stand 03: Robots Móviles & Vehículos Autónomos (AGV)
 │               ├── stand04.js     # Stand 04: Robots Humanoides & Locomoción Bípeda
 │               └── stand05.js     # Stand 05: Exoesqueletos & Robótica Médica
 └── README.md
 ```
+
+---
+
+## 🔐 Variables de Entorno (Supabase)
+
+Las credenciales **nunca** se escriben a mano en el código fuente (regla de la constitución del proyecto):
+
+1. **Local:** copia `.env.example` a `.env` y completa tus claves. Ejecuta `npm run build` (o `npm run dev`, que lo ejecuta automáticamente) para generar `src/js/config.js`.
+2. **Vercel:** configura las mismas variables (`SUPABASE_URL` y `SUPABASE_ANON_KEY`) en *Project Settings > Environment Variables*. Vercel ejecuta `npm run build` en cada deploy y `build.js` las inyecta automáticamente.
+3. **Base de datos:** ejecuta `schema.sql` en el SQL Editor de Supabase antes del primer uso.
+
+> Si faltan las variables, la app no se rompe: funciona en modo solo-local (`localStorage`) mostrando un aviso.
 
 ---
 
