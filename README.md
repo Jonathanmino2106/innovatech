@@ -30,7 +30,9 @@ innovatech\
 │           ├── qrView.js          # Visor de cámara y solapa Plan B (código manual)
 │           ├── passportView.js    # Colección de sellos y avance de la ruta
 │           ├── ranksView.js       # Rangos alcanzables y logros desbloqueables
+│           ├── statsView.js       # Gráficos de torta/dona y tabla de clasificación (Chart.js)
 │           └── stands\
+│               ├── standView.js   # Plantilla común de estación (hero + validación QR)
 │               ├── stand01.js     # Stand 01: Robótica Industrial & Brazos Articulados
 │               ├── stand02.js     # Stand 02: Drones Autónomos & Visión Espacial
 │               ├── stand03.js     # Stand 03: Robots Móviles & Vehículos Autónomos (AGV)
@@ -55,7 +57,7 @@ Las credenciales **nunca** se escriben a mano en el código fuente (regla de la 
 
 ## 🧩 Principios de la Arquitectura
 
-1. **Aislamiento por Stand:** Cada archivo `stand01.js` a `stand05.js` es un módulo independiente que encapsula sus metadatos, especificaciones técnicas de robótica, pregunta de opción múltiple, validación visual instantánea y llamada para otorgar el sello. Si se modifica o agrega contenido a un stand, **ningún otro stand se ve afectado**.
+1. **Aislamiento por Stand:** Cada archivo `stand01.js` a `stand05.js` exporta únicamente los metadatos y especificaciones técnicas de su proyecto, renderizados por la plantilla común `stands/standView.js`. Si se modifica o agrega contenido a un stand, **ningún otro stand se ve afectado**. Los retos pedagógicos se gestionan externamente con Google Forms.
 2. **Enrutador Central Reactivo:** `app.js` maneja el ciclo de vida del DOM inyectando las vistas en `#app`, controla las rutas (`login`, `home`, `map`, `qr`, `stand-01`... `stand-05`) y sincroniza el estado persistente en `localStorage`.
 3. **Navbar Desacoplado:** El componente `navbar.js` recibe el nombre de la ruta activa y emite eventos de navegación a través de su callback hacia el enrutador.
 4. **Mobile-First 100%:** Diseñado exclusivamente para interactuar en pantallas de smartphones con accesos táctiles, botones ergonómicos y áreas de seguridad de borde (`safe-bottom`).

@@ -10,15 +10,15 @@ Este archivo guía la implementación atómica del proyecto. Cada tarea debe mar
 
 ### Fase 2: Vistas de Acceso y Panel Principal (Mobile-First)
 *   [ ] **Tarea 2.1:** Desarrollar la pantalla de **Login / Acceso y Recuperación** (RF-01, RF-02) utilizando clases utilitarias de Tailwind. Debe incluir pestañas para "Crear pasaporte" y "Ya tengo mi pasaporte".
-*   [ ] **Tarea 2.2:** Desarrollar el **Panel de Recorrido (Home)** (RF-04), maquetando la barra de progreso de avance porcentual (0%-100%), el rango de gamificación y los accesos rápidos con un diseño táctil superior a 48px (`h-12`).
-*   [ ] **Tarea 2.3:** Implementar el **Módulo de Lógica de Sesión**, permitiendo guardar el código único generado en el almacenamiento local o recuperarlo desde Supabase para restaurar el progreso si el usuario cierra el navegador de su celular.
+*   [x] **Tarea 2.2:** Desarrollar el **Panel de Recorrido (Home)** (RF-04), maquetando la barra de progreso de avance porcentual (0%-100%), el rango de gamificación y los accesos rápidos con un diseño táctil superior a 48px (`h-12`).
+*   [x] **Tarea 2.3:** Implementar el **Módulo de Lógica de Sesión**, permitiendo guardar el código único generado en el almacenamiento local o recuperarlo desde Supabase para restaurar el progreso si el usuario cierra el navegador de su celular.
 
 ### Fase 3: Recorrido, Validación y Retos
-*   [ ] **Tarea 3.1:** Crear la vista del **Mapa Interactivo** (RF-05) utilizando el plano esquemático simplificado y pines interactivos de colores (Verde = Visitado, Gris/Rojo = Pendiente).
+*   [x] **Tarea 3.1:** Crear la vista del **Mapa Interactivo** (RF-05) utilizando el plano esquemático simplificado y pines interactivos de colores (Verde = Visitado, Gris/Rojo = Pendiente).
 *   [ ] **Tarea 3.2:** Implementar la interfaz de **Validación por QR e Ingreso Manual (Plan B)** (RF-06). Asegurar que la solapa alternativa con teclado alfanumérico funcione correctamente si falla la cámara.
-*   [ ] **Tarea 3.3:** Desarrollar el componente de **Actividad y Retos del Stand** (RF-07), creando formularios dinámicos breves de una sola pantalla para las trivias pedagógicas y el sistema de calificación por estrellas (1 a 5).
+*   [x] **Tarea 3.3:** Sistema de **calificación por estrellas (1 a 5)** tras obtener el sello, persistido en Supabase (`visitas_estaciones.valoracion`). Los retos pedagógicos (RF-07) se externalizan a Google Forms, fuera del alcance de la web app.
 
 ### Fase 4: Estadísticas y Gamificación 
-*   [ ] **Tarea 4.1:** Programar el componente de **Rangos y Logros** (RF-08) que calcule de manera automática el estatus acumulativo del estudiante (Visitante hasta Visionario) según los sellos logrados.
-*   [ ] **Tarea 4.2:** Integrar Chart.js para procesar los datos de las visitas mediante filtros relacionales y renderizar los componentes visuales de los gráficos analíticos de **torta** y **dona**.
-*   [ ] **Tarea 4.3:** Realizar pruebas de conexión integrales de extremo a extremo (Registro ➡️ Escaneo QR/Manual ➡️ Trivia ➡️ Actualización de Gráficos) y documentar el pipeline final listo para el despliegue en Vercel.
+*   [x] **Tarea 4.1:** Programar el componente de **Rangos y Logros** (RF-08) que calcule de manera automática el estatus acumulativo del estudiante (Visitante hasta Visionario) según los sellos logrados.
+*   [x] **Tarea 4.2:** Integrar Chart.js para procesar los datos de las visitas mediante filtros relacionales y renderizar los componentes visuales de los gráficos analíticos de **torta** y **dona**.
+*   [ ] **Tarea 4.3:** Realizar pruebas de conexión integrales de extremo a extremo (Registro ➡️ Escaneo QR/Manual ➡️ Valoración ➡️ Actualización de Gráficos) y documentar el pipeline final listo para el despliegue en Vercel.

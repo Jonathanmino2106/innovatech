@@ -20,7 +20,7 @@ El ciclo de vida de la interacción de un usuario con el sistema se compone de l
 2. **Panel Principal (Home):** Visualiza una barra de avance porcentual (0%-100%), su rango actual de gamificación y accesos rápidos al mapa interactivo y al escáner.
 3. **Recorrido y Mapa:** El usuario consulta el plano esquemático de la feria para identificar la ubicación y estado (pendiente o visitado) de cada stand.
 4. **Validación Dual (QR o Plan B):** Al llegar al stand, el usuario escanea el código QR institucional mediante la cámara del celular. Si el dispositivo presenta fallas de hardware, poca luz o problemas de permisos de cámara, puede ingresar directamente un código alfanumérico alternativo (ej. `STAND01`).
-5. **Reto Pedagógico y Valoración:** Se despliega una breve trivia o formulario vinculado al proyecto del stand. Al completarlo, el usuario otorga una puntuación en estrellas (1 a 5).
+5. **Reto Pedagógico (Google Forms) y Valoración:** El reto pedagógico de cada stand se completa mediante un Google Forms externo (fuera del alcance de la web app). Tras validar la visita, el usuario otorga una puntuación en estrellas (1 a 5) que se persiste en la base de datos.
 6. **Visualización de Estadísticas:** El usuario puede visualizar los gráficos analíticos (torta y dona) en el panel general.
 
 ### 3. Reporte de Métricas y Visualización Analítica 
@@ -51,7 +51,7 @@ El módulo de estadísticas es una herramienta fundamental para los organizadore
 | **2. Panel de Recorrido (Home)** | Mostrar el estado general de avance y acceso rápido al mapa. | Barra de progreso porcentual (0%-100%), tarjeta de "Siguiente Estación recomendada", tablero de accesos rápidos. | Gamificación visual inmediata. El usuario sabe exactamente dónde está y qué le falta. |
 | **3. Mapa Interactivo** | Ubicar geográficamente los stands y su estado actual. | Plano esquemático simplificado, pines interactivos (Verde = Visitado, Gris/Rojo = Pendiente). | Evita el uso de mapas complejos con zoom excesivo. Cada pin abre la tarjeta informativa del stand. |
 | **4. Validación por QR (Cámara / Código)** | Registrar la visita física al stand mediante escaneo o alternativa. | Visor de cámara con mira de enfoque y solapa alterna para ingresar código demostrativo (ej. STAND01). | Crítico: Soluciona fallas de hardware, falta de permisos de cámara o poca luz con un teclado numérico/alfanumérico alternativo. |
-| **5. Actividad y Retos del Stand** | Garantizar la interacción educativa en cada estación. | Tarjeta informativa del proyecto de robótica, trivia corta o selección múltiple, botón "Sellar mi pasaporte". | Formularios breves de una sola pantalla sin scroll pesado para mantener ágil el flujo en los pasillos de la feria. |
+| **5. Validación de la Estación** | Registrar la visita física y valorar la experiencia. | Tarjeta informativa del proyecto de robótica y botón "Validar presencia · ver QR". Los retos se gestionan con Google Forms externo; la valoración por estrellas (1-5) se registra tras el sello. | Pantalla breve sin scroll pesado para mantener ágil el flujo en los pasillos de la feria. |
 | **6. Rangos y Logros (Gamificación)** | Incentivar la finalización del recorrido completo. | Niveles desbloqueables (Visitante, Explorador, Descubridor, Pionero, Visionario) y grilla de medallas. | Aumenta la motivación intrínseca de los estudiantes mediante un sistema de estatus y logros acumulativos. |
 
 ### 6. Especificación de Requerimientos
@@ -63,7 +63,7 @@ El módulo de estadísticas es una herramienta fundamental para los organizadore
 * **RF-04: Visualización del Panel de Recorrido (Home).** El sistema muestra un resumen gráfico del avance del usuario en porcentaje (0%-100%), los sellos activos y un acceso directo a la siguiente estación recomendada.
 * **RF-05: Mapa Interactivo de Estaciones.** El sistema ofrece un plano esquemático visual de la feria donde se despliegan pines interactivos con el estado de cada stand (Pendiente / Visitado).
 * **RF-06: Sistema de Validación Dual (QR y Código Manual).** El sistema valida la presencia física del usuario mediante lectura de códigos QR o mediante entrada alternativa por código alfanumérico (ej. STAND01) para garantizar accesibilidad.
-* **RF-07: Módulo de Retos por Estación.** El sistema presenta una actividad interactiva corta vinculada a cada stand para completar la validación pedagógica antes de otorgar el sello.
+* **RF-07: Módulo de Retos por Estación (externo).** Los retos pedagógicos de cada stand se gestionan mediante formularios Google Forms vinculados a cada estación; la web app registra la visita física y la valoración del usuario.
 * **RF-08: Gamificación y Rangos.** El sistema categoriza el progreso del usuario mediante rangos desbloqueables (Visitante, Explorador, Descubridor, Pionero, Visionario) en función de la cantidad de sellos acumulados.
 
 #### 6.2 Requerimientos No Funcionales (RNF)
