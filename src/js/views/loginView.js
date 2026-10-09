@@ -1,6 +1,7 @@
 /**
- * INNOVATECH - Vista de Creación de Pasaporte (crea-pasaporte)
- * Diseño exacto a crear-pasaporte.png y pasaporte-creado.png
+ * INNOVATECH - Vista de Creación/Recuperación de Pasaporte (crea-pasaporte)
+ * Pestañas formales: "Crear mi pasaporte" (nickname + curso) y
+ * "Ya tengo mi pasaporte" (recuperación por código FT26-####, sin contraseñas).
  * Registra el usuario en Supabase (tabla usuarios) y en localStorage antes de habilitar home1.
  */
 
@@ -15,7 +16,7 @@ export function createCreaPasaporteView(app) {
     container.innerHTML = "";
 
     if (!isCreated) {
-      // Pantalla de formulario: crear-pasaporte.png
+      // Pantalla con pestañas: crear-pasaporte.png / recuperar sesión
       container.innerHTML = `
         <div class="flex items-center justify-between text-xs text-slate-500">
           <span class="font-mono uppercase font-bold text-[11px] text-cyan-600">INNOVATECH 2026</span>
@@ -35,18 +36,33 @@ export function createCreaPasaporteView(app) {
         </div>
 
         <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-5">
+
+          <!-- Pestañas: Crear / Recuperar -->
+          <div class="p-1 bg-slate-100 rounded-xl flex">
+            <button id="tab-create" class="flex-1 min-h-12 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all">
+              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+              <span>Crear mi pasaporte</span>
+            </button>
+            <button id="tab-restore" class="flex-1 min-h-12 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all">
+              <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
+              <span>Ya tengo mi pasaporte</span>
+            </button>
+          </div>
+
+          <!-- Formulario: Crear pasaporte -->
           <form id="form-crear-pasaporte" class="space-y-4">
             <div>
               <label for="create-nickname" class="block text-xs font-bold text-slate-700 mb-1.5">
                 Nickname <span class="text-cyan-600">*</span>
               </label>
-              <input 
-                id="create-nickname" 
-                type="text" 
-                required 
-                placeholder="Ej. orbitante_26" 
+              <input
+                id="create-nickname"
+                type="text"
+                required
+                placeholder="Ej. orbitante_26"
                 maxlength="25"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
+                autocomplete="off"
+                class="w-full min-h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
               />
             </div>
 
@@ -54,39 +70,87 @@ export function createCreaPasaporteView(app) {
               <label for="create-grade" class="block text-xs font-bold text-slate-700 mb-1.5">
                 Curso <span class="text-slate-400 font-normal">(opcional)</span>
               </label>
-              <input 
-                id="create-grade" 
-                type="text" 
-                placeholder="Ej. 2º medio B" 
+              <input
+                id="create-grade"
+                type="text"
+                placeholder="Ej. 2º medio B"
                 maxlength="30"
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
+                autocomplete="off"
+                class="w-full min-h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
               />
             </div>
 
-            <button 
+            <button
               id="btn-submit-pasaporte"
-              type="submit" 
-              class="w-full bg-[#132840] hover:bg-[#0a1827] active:scale-95 text-white font-semibold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs sm:text-sm transition-all shadow-md mt-2 disabled:opacity-50"
+              type="submit"
+              class="w-full min-h-12 bg-[#132840] hover:bg-[#0a1827] active:scale-95 text-white font-semibold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs sm:text-sm transition-all shadow-md mt-2 disabled:opacity-50"
             >
               <span id="btn-text">Crear mi pasaporte</span>
               <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
           </form>
 
-          <!-- Solapa para recuperar código existente -->
-          <div class="pt-2 border-t border-slate-100 text-center">
-            <button id="btn-toggle-restore" class="text-xs text-cyan-700 hover:text-cyan-800 font-semibold underline">
-              ¿Ya tienes un código? Ingrésalo aquí
+          <!-- Formulario: Recuperar pasaporte por código -->
+          <form id="form-restore-pasaporte" class="space-y-4 hidden">
+            <div>
+              <label for="restore-code" class="block text-xs font-bold text-slate-700 mb-1.5">
+                Código de pasaporte
+              </label>
+              <input
+                id="restore-code"
+                type="text"
+                required
+                placeholder="FT26-2470"
+                maxlength="10"
+                autocapitalize="characters"
+                autocomplete="off"
+                class="w-full min-h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-mono text-base font-bold uppercase text-slate-900 placeholder-slate-400 tracking-wider focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
+              />
+              <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
+                Ingresa el código que se asignó al crear tu pasaporte para restaurar tus sellos al instante.
+              </p>
+            </div>
+
+            <button
+              id="btn-submit-restore"
+              type="submit"
+              class="w-full min-h-12 bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-semibold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs sm:text-sm transition-all shadow-md disabled:opacity-50"
+            >
+              <span id="btn-restore-text">Recuperar mi recorrido</span>
+              <i data-lucide="log-in" class="w-4 h-4"></i>
             </button>
-          </div>
+          </form>
         </div>
 
         <p class="text-center text-[11px] text-slate-400">
-          Al continuar creas un pasaporte temporal para esta experiencia.
+          Sin contraseñas: tu código único es la clave de tu recorrido.
         </p>
       `;
 
-      const form = container.querySelector("#form-crear-pasaporte");
+      // ---- Pestañas ----
+      const tabCreate = container.querySelector("#tab-create");
+      const tabRestore = container.querySelector("#tab-restore");
+      const formCreate = container.querySelector("#form-crear-pasaporte");
+      const formRestore = container.querySelector("#form-restore-pasaporte");
+
+      function activateTab(which) {
+        const createActive = which === "create";
+        tabCreate.className = createActive
+          ? "flex-1 min-h-12 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all"
+          : "flex-1 min-h-12 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
+        tabRestore.className = createActive
+          ? "flex-1 min-h-12 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all"
+          : "flex-1 min-h-12 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
+        formCreate.classList.toggle("hidden", !createActive);
+        formRestore.classList.toggle("hidden", createActive);
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      tabCreate.addEventListener("click", () => activateTab("create"));
+      tabRestore.addEventListener("click", () => activateTab("restore"));
+
+      // ---- Crear pasaporte ----
+      const form = formCreate;
       const btnSubmit = container.querySelector("#btn-submit-pasaporte");
       const btnText = container.querySelector("#btn-text");
 
@@ -111,13 +175,29 @@ export function createCreaPasaporteView(app) {
         }
       });
 
-      container.querySelector("#btn-toggle-restore").addEventListener("click", async () => {
-        const code = prompt("Ingresa tu código de pasaporte (ej. FT26-2470):");
-        if (code && code.trim()) {
-          const ok = await app.restoreSession(code.trim());
-          if (ok) {
-            app.navigate("home1");
-          }
+      // ---- Recuperar pasaporte por código ----
+      const inputRestore = container.querySelector("#restore-code");
+      const btnRestore = container.querySelector("#btn-submit-restore");
+      const btnRestoreText = container.querySelector("#btn-restore-text");
+
+      formRestore.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const code = inputRestore.value.trim();
+        if (!code) return;
+
+        btnRestore.disabled = true;
+        btnRestoreText.textContent = "Buscando tu recorrido...";
+
+        const ok = await app.restoreSession(code);
+
+        if (ok) {
+          app.navigate("home1");
+        } else {
+          btnRestore.disabled = false;
+          btnRestoreText.textContent = "Recuperar mi recorrido";
+          inputRestore.classList.add("animate-shake", "border-rose-500");
+          app.showToast("Código no encontrado. Verifícalo e inténtalo de nuevo.");
+          setTimeout(() => inputRestore.classList.remove("animate-shake"), 400);
         }
       });
 
@@ -145,12 +225,12 @@ export function createCreaPasaporteView(app) {
 
             <!-- Código Copiable y Botón Entrar a home1 -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-7">
-              <button id="btn-copy-code" class="w-full sm:w-auto bg-[#163659] hover:bg-[#1a426e] border border-cyan-500/40 text-cyan-200 px-4 py-3 rounded-xl font-mono text-sm font-bold flex items-center justify-center gap-2 transition-all">
+              <button id="btn-copy-code" class="w-full sm:w-auto min-h-12 bg-[#163659] hover:bg-[#1a426e] border border-cyan-500/40 text-cyan-200 px-4 py-3 rounded-xl font-mono text-sm font-bold flex items-center justify-center gap-2 transition-all">
                 <span>${u.passportCode}</span>
                 <i data-lucide="copy" class="w-4 h-4 text-cyan-400"></i>
               </button>
 
-              <button id="btn-enter-home1" class="w-full sm:w-auto bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md">
+              <button id="btn-enter-home1" class="w-full sm:w-auto min-h-12 bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md">
                 <span>Entrar al recorrido</span>
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
               </button>

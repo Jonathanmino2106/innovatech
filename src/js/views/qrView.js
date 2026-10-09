@@ -1,8 +1,8 @@
 /**
- * INNOVATECH - Vista de Escaneo QR y Plan B Código Manual
- * Basada fielmente en:
- * - vista-sello-qr.png (Visor de cámara animado, marco cian redondeado, botón usar código demostrativo)
- * - vista-sello-obtenido.png (Input STAND01, Validar y guardar sello, Caja verde de Sello Guardado)
+ * INNOVATECH - Vista de Escaneo QR (cámara real) y Plan B Código Manual
+ * - Cámara: decodificador QR real con html5-qrcode (facingMode trasera).
+ * - Plan B: pestaña con input alfanumérico para fallas de cámara/permisos/luz.
+ * - Tras sellar: valoración por estrellas (1-5) persistida en Supabase.
  */
 
 export function createQrView(app, targetStandId = null) {
@@ -28,43 +28,32 @@ export function createQrView(app, targetStandId = null) {
         Activa tu sello.
       </h2>
       <p class="text-xs text-slate-500 mt-1">
-        Estás en <span class="font-bold text-slate-800">${currentStand.name}</span>. Usa la cámara o prueba el código demostrativo.
+        Estás en <span class="font-bold text-slate-800">${currentStand.name}</span>. Escanea el QR institucional o usa el código manual.
       </p>
     </div>
 
     <!-- Tarjeta Flotante Blanca -->
     <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-      
+
       <!-- Pestañas Selectoras Cámara / Código -->
       <div class="p-1 bg-slate-100 rounded-xl flex">
-        <button id="tab-cam" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all">
+        <button id="tab-cam" class="flex-1 min-h-12 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all">
           <i data-lucide="scan" class="w-3.5 h-3.5"></i>
           <span>Cámara</span>
         </button>
-        <button id="tab-code" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all">
+        <button id="tab-code" class="flex-1 min-h-12 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all">
           <i data-lucide="keyboard" class="w-3.5 h-3.5"></i>
           <span>Código</span>
         </button>
       </div>
 
-      <!-- Panel Cámara (vista-sello-qr.png) -->
-      <div id="panel-cam" class="space-y-4">
-        <div class="relative w-full aspect-[4/3] bg-[#0f2742] rounded-2xl overflow-hidden flex flex-col items-center justify-center p-4">
-          <!-- Rectángulo redondeado con borde cian y láser animado -->
-          <div class="relative w-64 h-36 border-2 border-cyan-400 rounded-2xl flex items-center justify-center overflow-hidden">
-            <div class="absolute left-0 right-0 h-0.5 bg-cyan-400 shadow-[0_0_8px_#22d3ee] animate-scan-sweep"></div>
-          </div>
-          <span class="text-[11px] text-slate-300 font-medium mt-3 block">Enfoca el código del stand</span>
-        </div>
+      <!-- Panel Cámara (lector QR real) -->
+      <div id="panel-cam" class="space-y-3">
+        <div id="qr-reader" class="w-full min-h-[13rem] bg-[#0f2742] rounded-2xl overflow-hidden"></div>
 
         <p class="text-center text-[11px] text-slate-400 leading-relaxed">
-          La cámara real depende de permisos del dispositivo. Para esta demo puedes usar el código de abajo.
+          Apunta la cámara al QR institucional de la estación. Si falla la cámara o los permisos, usa la pestaña <b>Código</b>.
         </p>
-
-        <button id="btn-use-demo" class="w-full bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-all shadow-md">
-          <span>Usar código demostrativo</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </button>
       </div>
 
       <!-- Panel Código / Plan B (vista-sello-obtenido.png) -->
@@ -73,25 +62,27 @@ export function createQrView(app, targetStandId = null) {
           <label for="input-code-val" class="block text-xs font-bold text-slate-700 mb-1.5">
             Código del stand
           </label>
-          <input 
-            id="input-code-val" 
-            type="text" 
-            placeholder="${currentStand.code}" 
+          <input
+            id="input-code-val"
+            type="text"
+            placeholder="${currentStand.code}"
             maxlength="10"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-mono text-base font-bold uppercase text-slate-900 placeholder-slate-400 tracking-wider focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
+            autocapitalize="characters"
+            autocomplete="off"
+            class="w-full min-h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-mono text-base font-bold uppercase text-slate-900 placeholder-slate-400 tracking-wider focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
           />
           <p class="text-[11px] text-slate-500 mt-1.5">
             Prueba con <button id="btn-quick-fill" class="text-cyan-700 font-bold underline">${currentStand.code}</button>.
           </p>
         </div>
 
-        <button id="btn-submit-code" class="w-full bg-[#132840] hover:bg-[#0a1827] active:scale-95 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-all shadow-md">
+        <button id="btn-submit-code" class="w-full min-h-12 bg-[#132840] hover:bg-[#0a1827] active:scale-95 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-all shadow-md">
           <span>Validar y guardar sello</span>
           <i data-lucide="check" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <!-- Caja Verde de Sello Guardado (vista-sello-obtenido.png) -->
+      <!-- Caja Verde de Sello Guardado + Valoración por Estrellas -->
       <div id="box-success" class="${app.isStandCompleted(currentStand.id) ? '' : 'hidden'} p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
         <div class="flex items-center gap-2 text-emerald-800 font-bold text-xs">
           <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
@@ -106,12 +97,12 @@ export function createQrView(app, targetStandId = null) {
           <p class="text-[11px] font-bold text-emerald-800 mb-2">¿Cómo fue tu experiencia en esta estación?</p>
           <div id="rate-stars" class="flex items-center gap-1.5">
             ${[1, 2, 3, 4, 5].map(n => `
-              <button data-stars="${n}" class="star-btn w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-all border bg-white border-emerald-200 text-amber-400 hover:bg-amber-50">★</button>
+              <button data-stars="${n}" class="star-btn w-11 h-12 rounded-xl flex items-center justify-center text-lg transition-all border bg-white border-emerald-200 text-amber-400 hover:bg-amber-50">★</button>
             `).join("")}
           </div>
         </div>
 
-        <button id="btn-goto-passport" class="w-full bg-white hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
+        <button id="btn-goto-passport" class="w-full min-h-12 bg-white hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
           <span>Ver mi pasaporte</span>
           <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
         </button>
@@ -120,11 +111,7 @@ export function createQrView(app, targetStandId = null) {
     </div>
   `;
 
-  // Asignar listeners
-  container.querySelector("#btn-back-station").addEventListener("click", () => {
-    app.navigate(currentStand.id);
-  });
-
+  // ---- Referencias y pestañas ----
   const tabCam = container.querySelector("#tab-cam");
   const tabCode = container.querySelector("#tab-code");
   const panelCam = container.querySelector("#panel-cam");
@@ -132,31 +119,76 @@ export function createQrView(app, targetStandId = null) {
   const boxSuccess = container.querySelector("#box-success");
   const inputCode = container.querySelector("#input-code-val");
 
-  tabCam.addEventListener("click", () => {
-    tabCam.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
-    tabCode.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
-    panelCam.classList.remove("hidden");
-    panelCode.classList.add("hidden");
-  });
+  function activateTab(which) {
+    const camActive = which === "cam";
+    tabCam.className = camActive
+      ? "flex-1 min-h-12 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all"
+      : "flex-1 min-h-12 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
+    tabCode.className = camActive
+      ? "flex-1 min-h-12 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all"
+      : "flex-1 min-h-12 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
+    panelCam.classList.toggle("hidden", !camActive);
+    panelCode.classList.toggle("hidden", camActive);
+    if (camActive) startScanner(); else stopScanner();
+    if (window.lucide) window.lucide.createIcons();
+  }
 
-  tabCode.addEventListener("click", () => {
-    tabCode.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
-    tabCam.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
-    panelCode.classList.remove("hidden");
-    panelCam.classList.add("hidden");
-  });
+  // ---- Escáner QR real (html5-qrcode) ----
+  let scanner = null;
 
-  function completeStamp(stand, metodo = 'manual') {
+  async function startScanner() {
+    if (scanner) return;
+    if (!window.Html5Qrcode) {
+      activateTab("code");
+      app.showToast("Cámara no disponible. Usa el código manual (Plan B).");
+      return;
+    }
+    try {
+      scanner = new window.Html5Qrcode("qr-reader", { verbose: false });
+      await scanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 200, height: 200 } },
+        (decodedText) => onScanSuccess(decodedText),
+        () => {} // errores de parseo por frame: se ignoran
+      );
+    } catch (err) {
+      console.warn("No se pudo iniciar la cámara:", err);
+      scanner = null;
+      activateTab("code");
+      app.showToast("Sin acceso a la cámara. Ingresa el código manual.");
+    }
+  }
+
+  async function stopScanner() {
+    if (!scanner) return;
+    try { await scanner.stop(); scanner.clear(); } catch (_) { /* ya detenida */ }
+    scanner = null;
+  }
+
+  function onScanSuccess(text) {
+    const val = String(text).trim().toUpperCase();
+    const found = stands.find(s => s.code.toUpperCase() === val);
+    if (!found) {
+      app.showToast("QR no reconocido. Verifica el código del stand.");
+      return;
+    }
+    stopScanner();
+    completeStamp(found, "qr");
+  }
+
+  // Limpieza al navegar fuera de la vista (evita que la cámara siga activa)
+  app.viewCleanup = () => { stopScanner(); };
+
+  // ---- Lógica de sello y valoración ----
+  function completeStamp(stand, metodo = "manual") {
     app.unlockStamp(stand.id, metodo);
     boxSuccess.classList.remove("hidden");
     app.showToast(`Sello obtenido: ${stand.name}`);
     if (window.lucide) window.lucide.createIcons();
   }
 
-  container.querySelector("#btn-use-demo").addEventListener("click", () => {
-    // Simula el escaneo con cámara → método 'qr' (alimenta el gráfico de dona)
-    completeStamp(currentStand, 'qr');
-  });
+  tabCam.addEventListener("click", () => activateTab("cam"));
+  tabCode.addEventListener("click", () => activateTab("code"));
 
   container.querySelector("#btn-quick-fill").addEventListener("click", () => {
     inputCode.value = currentStand.code;
@@ -167,7 +199,7 @@ export function createQrView(app, targetStandId = null) {
     const found = stands.find(s => s.code.toUpperCase() === val);
     if (found) {
       // Plan B: ingreso manual alfanumérico → método 'manual'
-      completeStamp(found, 'manual');
+      completeStamp(found, "manual");
     } else {
       inputCode.classList.add("animate-shake", "border-rose-500");
       app.showToast("Código no válido. Prueba con " + currentStand.code);
@@ -187,6 +219,10 @@ export function createQrView(app, targetStandId = null) {
     app.navigate("passport");
   });
 
+  container.querySelector("#btn-back-station").addEventListener("click", () => {
+    app.navigate(currentStand.id);
+  });
+
   // Valoración por estrellas (1-5) → persiste en visitas_estaciones.valoracion
   const starBtns = container.querySelectorAll("#rate-stars .star-btn");
 
@@ -194,8 +230,8 @@ export function createQrView(app, targetStandId = null) {
     starBtns.forEach((b) => {
       const val = parseInt(b.getAttribute("data-stars"), 10);
       b.className = val <= n
-        ? "star-btn w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-all border bg-amber-400 border-amber-500 text-white shadow-sm"
-        : "star-btn w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-all border bg-white border-emerald-200 text-amber-400 hover:bg-amber-50";
+        ? "star-btn w-11 h-12 rounded-xl flex items-center justify-center text-lg transition-all border bg-amber-400 border-amber-500 text-white shadow-sm"
+        : "star-btn w-11 h-12 rounded-xl flex items-center justify-center text-lg transition-all border bg-white border-emerald-200 text-amber-400 hover:bg-amber-50";
     });
   }
 
@@ -210,6 +246,9 @@ export function createQrView(app, targetStandId = null) {
   // Restaurar valoración previa si existe
   const prevRating = app.state.stamps[currentStand.id]?.valoracion;
   if (prevRating) paintStars(prevRating);
+
+  // Arranque: solicitar cámara al abrir la vista
+  if (window.Html5Qrcode) startScanner();
 
   return container;
 }

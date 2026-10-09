@@ -166,18 +166,22 @@ class AppRouter {
     // Si coincide con el local anterior
     const localRaw = localStorage.getItem(STORAGE_KEY);
     if (localRaw) {
-      const parsed = JSON.parse(localRaw);
-      if (parsed.user && (parsed.user.codigo_pasaporte === cleanCode || parsed.user.passportCode === cleanCode)) {
-        this.state.user = parsed.user;
-        this.state.stamps = parsed.stamps || {};
-        this.saveLocalState();
-        this.showToast(`Bienvenido, ${this.state.user.nickname}`);
-        return true;
+      try {
+        const parsed = JSON.parse(localRaw);
+        if (parsed.user && (parsed.user.codigo_pasaporte === cleanCode || parsed.user.passportCode === cleanCode)) {
+          this.state.user = parsed.user;
+          this.state.stamps = parsed.stamps || {};
+          this.saveLocalState();
+          this.showToast(`Bienvenido, ${this.state.user.nickname}`);
+          return true;
+        }
+      } catch (e) {
+        console.warn("localStorage corrupto al restaurar:", e);
       }
     }
 
-    // Fallback creando sesión con dicho código
-    return await this.createSession(`Visitante ${cleanCode.slice(-4)}`);
+    // Código no encontrado en la nube ni en este dispositivo
+    return false;
   }
 
   // Sincronizar visitas desde Supabase
@@ -315,6 +319,12 @@ class AppRouter {
   }
 
   navigate(route) {
+    // Limpieza de la vista anterior (ej. detener el stream de la cámara QR)
+    if (typeof this.viewCleanup === "function") {
+      this.viewCleanup();
+      this.viewCleanup = null;
+    }
+
     // Si no hay usuario y se intenta navegar a una vista protegida, redirigir a 'crea-pasaporte'
     if (!this.state.user && route !== "crea-pasaporte") {
       this.currentRoute = "crea-pasaporte";
