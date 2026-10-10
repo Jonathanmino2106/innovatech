@@ -9,7 +9,7 @@ export function createHomeView(app) {
   const container = document.createElement("div");
   container.className = "w-full max-w-5xl px-4 py-6 md:py-8 space-y-6 pb-24 md:pb-12";
 
-  const user = app.state.user || { nickname: "Visitante", passportCode: "FT26-2470" };
+  const user = app.state.user || { nickname: "Visitante", passportCode: "kevin-0001" };
   const stands = app.standsList;
   const total = stands.length;
   const completed = app.getCompletedCount();

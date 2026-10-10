@@ -54,7 +54,7 @@ CREATE TABLE visitas_estaciones (
 | Tabla.Columna | Uso en el código (`src/js/app.js`) |
 | :--- | :--- |
 | `usuarios.nickname` / `usuarios.tipo_visitante` | Registro del formulario "Crear mi pasaporte" (RF-01). El perfil (Alumno, Profesor, Familiar, Visitante) alimenta el gráfico de perfiles de visitantes. |
-| `usuarios.codigo_pasaporte` | Código único autogenerado `FT26-####` para recuperar sesión (RF-02/RF-03). |
+| `usuarios.codigo_pasaporte` | Código único autogenerado `slug-del-nickname-0001` (nickname en minúsculas + número correlativo de registro) para recuperar sesión (RF-02/RF-03). |
 | `usuarios.progreso` / `usuarios.rango_actual` | Se recalculan y actualizan en cada sello obtenido (RF-04/RF-08). |
 | `visitas_estaciones.stand_codigo` | Llega como `stand_codigo: "STAND01"` (FK a `stands.id_stand`). |
 | `visitas_estaciones.metodo_ingreso` | `'qr'` (cámara) o `'manual'` (Plan B) → alimenta el gráfico de dona (RF-06). |

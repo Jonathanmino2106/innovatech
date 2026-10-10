@@ -88,16 +88,45 @@ class AppRouter {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
   }
 
+  // "Jonathan Mino" → "jonathan-mino" | "José 26!" → "jose-26"
+  // Minúsculas, sin tildes, espacios/especiales → guion, máx. 20 caracteres.
+  slugifyCode(nickname) {
+    const slug = String(nickname)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")   // quitar tildes/acentos
+      .replace(/[^a-z0-9]+/g, "-")       // espacios y especiales → guion
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 20)
+      .replace(/-+$/g, "");
+    return slug || "visitante";
+  }
+
+  // Siguiente número correlativo global (orden de registro).
+  // Excluye los códigos legados FT26-#### para que la serie nueva empiece en 0001.
+  async nextPassportNumber() {
+    const { data, error } = await supabase.from('usuarios').select('codigo_pasaporte');
+    if (error) throw new Error(error.message);
+    let max = 0;
+    (data || []).forEach((row) => {
+      const code = String(row.codigo_pasaporte || "");
+      if (/^ft26-/i.test(code)) return; // códigos antiguos no cuentan
+      const m = /(\d+)$/.exec(code);
+      if (m) max = Math.max(max, parseInt(m[1], 10));
+    });
+    return max + 1;
+  }
+
   // Crear usuario en Supabase (tabla usuarios) y guardar en localStorage
   // visitorType: 'Alumno' | 'Profesor' | 'Familiar' | 'Visitante' (columna tipo_visitante)
+  // Código: slug-del-nickname-0001 (número correlativo de registro)
   async createSession(nickname, visitorType = "Visitante") {
-    const randomDigits = Math.floor(1000 + Math.random() * 9000);
-    const codigo_pasaporte = `FT26-${randomDigits}`;
+    const slug = this.slugifyCode(nickname);
 
     const newUserPayload = {
       nickname: nickname.trim(),
       tipo_visitante: visitorType,
-      codigo_pasaporte,
+      codigo_pasaporte: `${slug}-0001`, // provisorio; se asigna en el bucle
       rango_actual: "Visitante",
       progreso: 0,
       fecha_creacion: new Date().toISOString()
@@ -106,31 +135,58 @@ class AppRouter {
     let savedUser = null;
 
     if (!supabase) {
-      savedUser = { id: `local-${Date.now()}`, ...newUserPayload, passportCode: codigo_pasaporte };
+      savedUser = { id: `local-${Date.now()}`, ...newUserPayload, passportCode: newUserPayload.codigo_pasaporte };
       this.state.user = savedUser;
       this.state.stamps = {};
       this.saveLocalState();
-      this.showToast(`Pasaporte local: ${codigo_pasaporte} (sin nube)`);
+      this.showToast(`Pasaporte local: ${newUserPayload.codigo_pasaporte} (sin nube)`);
       return this.state.user;
     }
 
+    // Número correlativo en orden de registro
+    let nextNum = 1;
     try {
-      const { data, error } = await supabase
-        .from('usuarios')
-        .insert([newUserPayload])
-        .select()
-        .single();
-
-      if (error) {
-        console.warn("Aviso Supabase usuarios insert:", error.message);
-        // Fallback robusto con ID generado localmente si hubiera restricción RLS
-        savedUser = { id: `local-${Date.now()}`, ...newUserPayload, passportCode: codigo_pasaporte };
-      } else {
-        savedUser = { ...data, passportCode: data.codigo_pasaporte };
-      }
+      nextNum = await this.nextPassportNumber();
     } catch (e) {
-      console.warn("Error de conexión con Supabase:", e);
-      savedUser = { id: `local-${Date.now()}`, ...newUserPayload, passportCode: codigo_pasaporte };
+      console.warn("No se pudo calcular el correlativo, uso 0001:", e.message);
+    }
+
+    // Insertar con reintento ante colisión (la BD garantiza UNIQUE con error 23505)
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const codigo = `${slug}-${String(nextNum + attempt).padStart(4, "0")}`;
+      newUserPayload.codigo_pasaporte = codigo;
+      try {
+        const { data, error } = await supabase
+          .from('usuarios')
+          .insert([newUserPayload])
+          .select()
+          .single();
+
+        if (!error) {
+          savedUser = { ...data, passportCode: data.codigo_pasaporte };
+          break;
+        }
+        if (error.code === '23505') {
+          // Dos personas llegaron al mismo milisegundo: incremento y reintento
+          console.warn(`Código ${codigo} duplicado, reintentando...`);
+          continue;
+        }
+        console.warn("Aviso Supabase usuarios insert:", error.message);
+        break; // otro error de BD → fallback local
+      } catch (e) {
+        console.warn("Error de conexión con Supabase:", e);
+        break; // sin red → fallback local
+      }
+    }
+
+    if (!savedUser) {
+      // Fallback robusto con ID generado localmente (misma apariencia de código)
+      savedUser = { id: `local-${Date.now()}`, ...newUserPayload, passportCode: newUserPayload.codigo_pasaporte };
+      this.state.user = savedUser;
+      this.state.stamps = {};
+      this.saveLocalState();
+      this.showToast(`Pasaporte local: ${savedUser.passportCode} (sin nube)`);
+      return this.state.user;
     }
 
     this.state.user = savedUser;
@@ -142,14 +198,19 @@ class AppRouter {
 
   // Restaurar usuario existente por código desde Supabase o localStorage
   async restoreSession(code) {
-    const cleanCode = code.trim().toUpperCase();
+    const cleanCode = code.trim();
+    if (!cleanCode) return false;
+    const norm = (v) => String(v || "").trim().toUpperCase();
 
     try {
+      // ilike = sin distinguir mayúsculas/minúsculas:
+      // cubre los nuevos códigos "kevin-0001" y los legados "FT26-8335"
+      const escaped = cleanCode.replace(/([%_\\])/g, "\\$1");
       const { data, error } = supabase
         ? await supabase
             .from('usuarios')
             .select('*')
-            .eq('codigo_pasaporte', cleanCode)
+            .ilike('codigo_pasaporte', escaped)
             .maybeSingle()
         : { data: null, error: null };
 
@@ -169,7 +230,7 @@ class AppRouter {
     if (localRaw) {
       try {
         const parsed = JSON.parse(localRaw);
-        if (parsed.user && (parsed.user.codigo_pasaporte === cleanCode || parsed.user.passportCode === cleanCode)) {
+        if (parsed.user && (norm(parsed.user.codigo_pasaporte) === norm(cleanCode) || norm(parsed.user.passportCode) === norm(cleanCode))) {
           this.state.user = parsed.user;
           this.state.stamps = parsed.stamps || {};
           this.saveLocalState();

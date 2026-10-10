@@ -28,7 +28,7 @@ Queda estrictamente prohibido el uso de tecnologías, frameworks o librerías fu
 *   **Principio de Validación Dual:** El sistema siempre debe contar con dos caminos de validación en la interfaz de escaneo:
     1. Lector de cámara de código QR institucional.
     2. Campo de entrada alfanumérico manual alternativo (Plan B de resiliencia, ej: `STAND01`) para mitigar fallas de hardware, cámara o conectividad escolar intermitente.
-*   **Sin Contraseñas Complejas:** El acceso y la recuperación de progreso se realizan únicamente mediante el **Seudónimo (nickname)** y el **Código Único de Pasaporte** autogenerado (ej. FT26-2470) para evitar fricciones de logueo.
+*   **Sin Contraseñas Complejas:** El acceso y la recuperación de progreso se realizan únicamente mediante el **Seudónimo (nickname)** y el **Código Único de Pasaporte** autogenerado (ej. kevin-0001: nickname en minúsculas + número correlativo de registro) para evitar fricciones de logueo.
 
 ### 5. Flujo de Trabajo (Git Workflow)
 *   El desarrollo se mantendrá organizado mediante Git local sincronizado hacia el repositorio remoto de GitHub.

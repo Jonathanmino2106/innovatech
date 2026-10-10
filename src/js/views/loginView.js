@@ -1,7 +1,7 @@
 /**
  * INNOVATECH - Vista de Creación/Recuperación de Pasaporte (crea-pasaporte)
  * Pestañas formales: "Crear mi pasaporte" (nickname + curso) y
- * "Ya tengo mi pasaporte" (recuperación por código FT26-####, sin contraseñas).
+ * "Ya tengo mi pasaporte" (recuperación por código slug-del-nickname-0001, sin contraseñas).
  * Registra el usuario en Supabase (tabla usuarios) y en localStorage antes de habilitar home1.
  */
 
@@ -103,14 +103,15 @@ export function createCreaPasaporteView(app) {
                 id="restore-code"
                 type="text"
                 required
-                placeholder="FT26-2470"
-                maxlength="10"
-                autocapitalize="characters"
+                placeholder="kevin-0001"
+                maxlength="30"
                 autocomplete="off"
-                class="w-full min-h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-mono text-base font-bold uppercase text-slate-900 placeholder-slate-400 tracking-wider focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
+                autocapitalize="off"
+                spellcheck="false"
+                class="w-full min-h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-mono text-base font-bold text-slate-900 placeholder-slate-400 tracking-wider focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
               />
               <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
-                Ingresa el código que se asignó al crear tu pasaporte para restaurar tus sellos al instante.
+                Ej. <span class="font-mono font-bold">kevin-0001</span> (tu nickname en minúsculas + tu número de registro). Se acepta sin distinguir mayúsculas.
               </p>
             </div>
 
@@ -206,7 +207,7 @@ export function createCreaPasaporteView(app) {
 
     } else {
       // Pantalla de éxito: pasaporte-creado.png
-      const u = createdUser || app.state.user || { nickname: "Visitante", passportCode: "FT26-2470" };
+      const u = createdUser || app.state.user || { nickname: "Visitante", passportCode: "kevin-0001" };
 
       container.innerHTML = `
         <div class="max-w-lg mx-auto py-8">
