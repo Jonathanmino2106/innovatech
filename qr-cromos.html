@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR de cromos secretos · INNOVATECH</title>
+  <!-- ARCHIVO GENERADO POR "npm run qr:cromos" - NO EDITAR A MANO -->
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .toolbar {
+      max-width: 800px;
+      margin: 0 auto 20px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .toolbar h1 { font-size: 16px; margin: 0 0 4px; }
+    .toolbar p { font-size: 12px; color: #64748b; margin: 0; line-height: 1.5; }
+    .toolbar button {
+      background: #13b8d4;
+      color: #fff;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 48px;
+    }
+    .toolbar button:hover { background: #0ea5be; }
+
+    .sheet {
+      max-width: 800px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+    .card {
+      background: #fff;
+      border: 2px dashed #94a3b8;
+      border-radius: 18px;
+      padding: 20px;
+      text-align: center;
+      break-inside: avoid;
+    }
+    .qr-wrap img {
+      width: 190px;
+      height: 190px;
+      image-rendering: pixelated;
+      display: block;
+      margin: 0 auto;
+    }
+    .meta { margin-top: 14px; }
+    .code {
+      display: inline-block;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #0f2742;
+      background: #f1f7f9;
+      border: 1px solid #e0edee;
+      border-radius: 999px;
+      padding: 3px 12px;
+    }
+    .meta h3 { font-size: 18px; margin: 10px 0 2px; }
+    .stand { font-size: 12px; color: #64748b; margin: 0; }
+    .rarity { font-size: 11px; font-weight: 700; color: #b45309; margin: 6px 0 0; text-transform: uppercase; letter-spacing: 1px; }
+    .hint { font-size: 11px; color: #94a3b8; margin: 8px 0 0; line-height: 1.5; font-style: italic; }
+
+    @media (max-width: 640px) { .sheet { grid-template-columns: 1fr; } }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .toolbar { display: none; }
+      .sheet { max-width: none; gap: 10mm; }
+      .card { border-radius: 12px; padding: 8mm; }
+      @page { size: A4 portrait; margin: 12mm; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div>
+      <h1>QR de cromos secretos · 5 stands</h1>
+      <p>Imprimí, cortá por la línea punteada y pegá cada QR <b>oculto</b> en su stand.<br />
+      Usá impresión al 100% (sin ajustar a página) y buen contraste: la cámara del celular debe leerlo desde ~30 cm.</p>
+    </div>
+    <button onclick="window.print()">🖨️ Imprimir hoja</button>
+  </div>
+
+  <div class="sheet">
+    
+      <div class="card">
+        <div class="qr-wrap">
+          <img src="./assets/cromos/CROMO01.png" alt="QR CROMO01" />
+        </div>
+        <div class="meta">
+          <span class="code">CROMO01</span>
+          <h3>Mano Biónica</h3>
+          <p class="stand">Stand 01 · Robótica Industrial &amp; Brazos Articulados</p>
+          <p class="rarity">Rareza Épica</p>
+          <p class="hint">Pista: No está montado en el brazo articulado: mirá debajo de la mesa del stand, donde se apoya el panel de control.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="qr-wrap">
+          <img src="./assets/cromos/CROMO02.png" alt="QR CROMO02" />
+        </div>
+        <div class="meta">
+          <span class="code">CROMO02</span>
+          <h3>Ala de Carbono</h3>
+          <p class="stand">Stand 02 · Drones Autónomos &amp; Visión Espacial</p>
+          <p class="rarity">Rareza Rara</p>
+          <p class="hint">Pista: Los drones vuelan alto, pero el cromo no: está escondido en el piso de la zona de vuelo, detrás de la pista de aterrizaje.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="qr-wrap">
+          <img src="./assets/cromos/CROMO03.png" alt="QR CROMO03" />
+        </div>
+        <div class="meta">
+          <span class="code">CROMO03</span>
+          <h3>Rueda Omnidireccional</h3>
+          <p class="stand">Stand 03 · Robots Móviles &amp; Vehículos Autónomos (AGV)</p>
+          <p class="rarity">Rareza Común</p>
+          <p class="hint">Pista: Seguí la línea marcada en el suelo: el cromo espera al final del carril del AGV, pegado a la estantería.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="qr-wrap">
+          <img src="./assets/cromos/CROMO04.png" alt="QR CROMO04" />
+        </div>
+        <div class="meta">
+          <span class="code">CROMO04</span>
+          <h3>Pierna Servo</h3>
+          <p class="stand">Stand 04 · Robots Humanoides &amp; Locomoción Bípeda</p>
+          <p class="rarity">Rareza Lendaria</p>
+          <p class="hint">Pista: Está a la altura de una rodilla: escondido en uno de los soportes metálicos de la arena de pruebas.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="qr-wrap">
+          <img src="./assets/cromos/CROMO05.png" alt="QR CROMO05" />
+        </div>
+        <div class="meta">
+          <span class="code">CROMO05</span>
+          <h3>Sensor EMG</h3>
+          <p class="stand">Stand 05 · Exoesqueletos &amp; Robótica Médica</p>
+          <p class="rarity">Rareza Mítica</p>
+          <p class="hint">Pista: El cromo siente tus impulsos: está pegado al respaldo de la silla del exoesqueleto, del lado izquierdo.</p>
+        </div>
+      </div>
+  </div>
+</body>
+</html>

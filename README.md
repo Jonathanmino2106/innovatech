@@ -57,6 +57,24 @@ Las credenciales **nunca** se escriben a mano en el código fuente (regla de la 
 
 ---
 
+## 🖨️ QR de los cromos secretos (organizador)
+
+Cada stand esconde un cromo físico con su propio QR (`CROMO01`…`CROMO05`). Para imprimirlos:
+
+```bash
+npm run qr:cromos
+```
+
+Eso genera:
+- `assets/cromos/CROMOxx.png` — los 5 QR (900×900 px, nivel de corrección de errores H).
+- `qr-cromos.html` — hoja A4 lista para imprimir con guías de corte y la pista de cada cromo.
+
+Abrí `qr-cromos.html` en el navegador, presioná **Imprimir** (al 100%, sin "ajustar a página"), cortá por la línea punteada y pegá cada QR **oculto** en su stand. El script lee los cromos desde `src/js/views/stands/standXX.js`, así que si cambiás un nombre o una pista, volvé a correr `npm run qr:cromos`.
+
+> La app valida el **texto** del QR (ej. `CROMO01`), no la imagen: si reimprimís uno, asegurate de que el contenido sea exactamente ese código.
+
+---
+
 ## 🧩 Principios de la Arquitectura
 
 1. **Aislamiento por Stand:** Cada archivo `stand01.js` a `stand05.js` exporta únicamente los metadatos y especificaciones técnicas de su proyecto, renderizados por la plantilla común `stands/standView.js`. Si se modifica o agrega contenido a un stand, **ningún otro stand se ve afectado**. Los retos pedagógicos se gestionan externamente con Google Forms.
