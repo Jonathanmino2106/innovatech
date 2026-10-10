@@ -109,3 +109,29 @@ select, input, button, textarea { font-family: inherit; }
     opacity: 1;
   }
 }
+
+/* ============================================================
+   FAB "MAPA" - botón grande elevado al centro de los navbar
+   (header desktop + bottom navbar móvil)
+   ============================================================ */
+.map-fab-circle {
+  background-image: linear-gradient(135deg, #13b8d4 0%, #0e7490 100%);
+  box-shadow: 0 10px 22px -6px rgba(8, 47, 73, 0.55),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.map-fab:hover .map-fab-circle {
+  transform: translateY(-2px);
+}
+
+.map-fab:active .map-fab-circle {
+  transform: scale(0.94);
+}
+
+/* Glow cyan cuando la vista activa es el mapa */
+.map-fab-active .map-fab-circle {
+  box-shadow: 0 0 0 4px rgba(19, 184, 212, 0.28),
+              0 12px 26px -6px rgba(8, 47, 73, 0.6),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
