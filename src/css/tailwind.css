@@ -1,0 +1,7 @@
+/* INNOVATECH - Input de Tailwind CLI
+   Compilado a tailwind.generated.css (no editar a mano).
+   El preflight (reset base) ya lo incluía el CDN, así que no hay delta visual. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -4,11 +4,16 @@
   "description": "PASAPORTE.26 | Feria Tecnológica",
   "private": true,
   "scripts": {
-    "build": "node build.js",
-    "start": "node build.js && node server.js",
-    "dev": "node build.js && node server.js"
+    "css": "tailwindcss -i ./src/css/tailwind.css -o ./src/css/tailwind.generated.css --minify",
+    "css:watch": "tailwindcss -i ./src/css/tailwind.css -o ./src/css/tailwind.generated.css --watch",
+    "build": "node build.js && npm run css",
+    "start": "npm run build && node server.js",
+    "dev": "node build.js && npm run css && node server.js"
   },
   "dependencies": {
     "@supabase/server": "^1.9.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
   }
 }

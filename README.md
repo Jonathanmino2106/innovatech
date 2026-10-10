@@ -1,6 +1,6 @@
 # INNOVATECH - Arquitectura Modular ES6 Mobile-First
 
-Aplicación web SPA ligera desarrollada para la feria de robótica INNOVATECH utilizando **HTML5**, **Tailwind CSS (CDN)** y **JavaScript Vanilla (Módulos ES6)** con aislamiento total por componente y stand.
+Aplicación web SPA ligera desarrollada para la feria de robótica INNOVATECH utilizando **HTML5**, **Tailwind CSS (CLI con build estático)** y **JavaScript Vanilla (Módulos ES6)** con aislamiento total por componente y stand.
 
 ---
 
@@ -10,13 +10,16 @@ Aplicación web SPA ligera desarrollada para la feria de robótica INNOVATECH ut
 innovatech\
 ├── index.html                     # Contenedor raíz con <div id="app"> y script type="module"
 ├── build.js                       # Genera src/js/config.js desde .env / variables de Vercel
+├── tailwind.config.js             # Config de Tailwind (colores theme.* y fonts), antes era inline en index.html
 ├── schema.sql                     # FUENTE DE VERDAD de la base de datos (ejecutar en Supabase)
 ├── server.js                      # Servidor estático local sin dependencias
 ├── src\
 │   ├── components\
 │   │   └── navbar.js              # Header superior + navbar inferior móvil
 │   ├── css\
-│   │   └── styles.css             # Animación láser de escaneo, rebote de pines, toast y grid
+│   │   ├── tailwind.css           # Input de Tailwind CLI (@tailwind base/components/utilities)
+│   │   ├── tailwind.generated.css # GENERADO por `npm run css` (gitignored, se regenera en cada build)
+│   │   └── styles.css             # Animación láser de escaneo, rebote de pines, FAB mapa, toast y grid
 │   └── js\
 │       ├── app.js                 # Enrutador central y gestión de estado global
 │       ├── config.js              # GENERADO por build.js (credenciales Supabase, no editar)
@@ -46,7 +49,7 @@ innovatech\
 
 Las credenciales **nunca** se escriben a mano en el código fuente (regla de la constitución del proyecto):
 
-1. **Local:** crea un archivo `.env` en la raíz con `SUPABASE_URL` y `SUPABASE_ANON_KEY`. Ejecuta `npm run dev` (ejecuta `build.js` automáticamente) para generar `src/js/config.js`.
+1. **Local:** crea un archivo `.env` en la raíz con `SUPABASE_URL` y `SUPABASE_ANON_KEY`. Ejecuta `npm run dev` (ejecuta `build.js` y el build de Tailwind automáticamente) para generar `src/js/config.js` y `src/css/tailwind.generated.css`.
 2. **Vercel:** configura las mismas variables (`SUPABASE_URL` y `SUPABASE_ANON_KEY`) en *Project Settings > Environment Variables*. Vercel ejecuta `npm run build` en cada deploy y `build.js` las inyecta automáticamente.
 3. **Base de datos:** ejecuta `schema.sql` en el SQL Editor de Supabase antes del primer uso.
 
@@ -68,8 +71,14 @@ Las credenciales **nunca** se escriben a mano en el código fuente (regla de la 
 1. Abre la carpeta del proyecto en **VS Code**.
 2. En la terminal ejecuta:
    ```bash
+   npm install       # primera vez: instala Tailwind CLI (devDependency)
    npm run dev
    ```
-   (Node.js ≥ 18. Genera `config.js` desde el `.env` y levanta el servidor estático local.)
-3. Abre `http://localhost:3000` y presiona `F12` para activar la vista de emulación móvil (ej. iPhone 14 o Galaxy S20).
-4. **Escáner QR:** la cámara requiere un contexto seguro — en local funciona en `localhost`, y en producción Vercel provee HTTPS automáticamente.
+   (Node.js ≥ 18. Genera `config.js` desde el `.env`, compila el CSS de Tailwind y levanta el servidor estático local.)
+3. **Desarrollo con cambios de clases CSS:** en una segunda terminal dejá corriendo
+   ```bash
+   npm run css:watch
+   ```
+   para que `tailwind.generated.css` se recompile solo cada vez que agregás o cambiás clases. Si no lo dejás corriendo, volvé a ejecutar `npm run dev` (o `npm run css`) después de tocar clases.
+4. Abre `http://localhost:3000` y presiona `F12` para activar la vista de emulación móvil (ej. iPhone 14 o Galaxy S20).
+5. **Escáner QR:** la cámara requiere un contexto seguro — en local funciona en `localhost`, y en producción Vercel provee HTTPS automáticamente.

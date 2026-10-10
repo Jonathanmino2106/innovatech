@@ -6,36 +6,6 @@
   <meta name="theme-color" content="#0f2742" />
   <title>PASAPORTE.26 | Feria Tecnológica</title>
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            theme: {
-              card: '#0f2742',
-              cardDark: '#0a1d33',
-              cardAccent: '#163659',
-              teal: '#13b8d4',
-              tealHover: '#0ea5be',
-              buttonDark: '#132840',
-              badgeGreen: '#10b981',
-              badgeGreenBg: '#ecfdf5',
-              grayBg: '#f8fafc',
-              borderLight: '#e2e8f0',
-              textPrimary: '#0f172a',
-              textSecondary: '#64748b'
-            }
-          },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
-
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,6 +19,9 @@
 
   <!-- html5-qrcode CDN (lector de cámara QR, JavaScript vanilla sin build) -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <!-- Tailwind CSS compilado en build (fuente: tailwind.config.js + src/css/tailwind.css) -->
+  <link rel="stylesheet" href="./src/css/tailwind.generated.css" />
 
   <!-- Estilos del Sistema de Diseño Oficial -->
   <link rel="stylesheet" href="./src/css/styles.css" />

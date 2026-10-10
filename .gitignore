@@ -8,3 +8,6 @@ node_modules/
 # Sistema
 Thumbs.db
 .DS_Store
+
+# CSS generado por Tailwind CLI (se regenera en cada build/deploy)
+src/css/tailwind.generated.css
