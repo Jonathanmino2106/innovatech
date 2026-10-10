@@ -29,6 +29,7 @@ class AppRouter {
     this.appRoot = document.getElementById("app");
     this.currentRoute = "crea-pasaporte";
     this.qrTargetStandId = null;
+    this.qrMode = "sello"; // 'sello' (validar stand) | 'cromo' (misión secreta)
 
     // Catálogo unificado de los 5 stands provistos por sus propios módulos
     this.standsMap = {
@@ -44,7 +45,8 @@ class AppRouter {
     // Estado global de la sesión
     this.state = {
       user: null, // { id, nickname, codigo_pasaporte, rango_actual, progreso, creado_en }
-      stamps: {}  // { "stand-01": { unlocked: true, unlockedAt: "..." } }
+      stamps: {}, // { "stand-01": { unlocked: true, unlockedAt: "..." } }
+      cromos: {}  // { "stand-01": { found: true, metodoIngreso: "qr", foundAt: "..." } } (misión secreta)
     };
 
     this.init();
@@ -63,6 +65,7 @@ class AppRouter {
     } else {
       this.state.user = null;
       this.state.stamps = {};
+      this.state.cromos = {};
       this.navigate("crea-pasaporte");
     }
   }
@@ -75,10 +78,12 @@ class AppRouter {
         const parsed = JSON.parse(raw);
         this.state.user = parsed.user || null;
         this.state.stamps = parsed.stamps || {};
+        this.state.cromos = parsed.cromos || {};
       } catch (e) {
         console.error("Error al cargar localStorage:", e);
         this.state.user = null;
         this.state.stamps = {};
+        this.state.cromos = {};
       }
     }
   }
@@ -138,6 +143,7 @@ class AppRouter {
       savedUser = { id: `local-${Date.now()}`, ...newUserPayload, passportCode: newUserPayload.codigo_pasaporte };
       this.state.user = savedUser;
       this.state.stamps = {};
+      this.state.cromos = {};
       this.saveLocalState();
       this.showToast(`Pasaporte local: ${newUserPayload.codigo_pasaporte} (sin nube)`);
       return this.state.user;
@@ -184,6 +190,7 @@ class AppRouter {
       savedUser = { id: `local-${Date.now()}`, ...newUserPayload, passportCode: newUserPayload.codigo_pasaporte };
       this.state.user = savedUser;
       this.state.stamps = {};
+      this.state.cromos = {};
       this.saveLocalState();
       this.showToast(`Pasaporte local: ${savedUser.passportCode} (sin nube)`);
       return this.state.user;
@@ -191,6 +198,7 @@ class AppRouter {
 
     this.state.user = savedUser;
     this.state.stamps = {};
+    this.state.cromos = {};
     this.saveLocalState();
     this.showToast(`¡Pasaporte creado: ${savedUser.passportCode}!`);
     return this.state.user;
@@ -217,6 +225,7 @@ class AppRouter {
       if (data && !error) {
         this.state.user = { ...data, passportCode: data.codigo_pasaporte };
         await this.loadVisitsFromSupabase(data.id);
+        await this.loadChromesFromSupabase(data.id);
         this.saveLocalState();
         this.showToast(`Bienvenido de vuelta, ${data.nickname}`);
         return true;
@@ -233,6 +242,7 @@ class AppRouter {
         if (parsed.user && (norm(parsed.user.codigo_pasaporte) === norm(cleanCode) || norm(parsed.user.passportCode) === norm(cleanCode))) {
           this.state.user = parsed.user;
           this.state.stamps = parsed.stamps || {};
+          this.state.cromos = parsed.cromos || {};
           this.saveLocalState();
           this.showToast(`Bienvenido, ${this.state.user.nickname}`);
           return true;
@@ -251,6 +261,7 @@ class AppRouter {
     if (!this.state.user || !this.state.user.id) return;
     try {
       await this.loadVisitsFromSupabase(this.state.user.id);
+      await this.loadChromesFromSupabase(this.state.user.id);
     } catch (e) {
       console.warn("Sincronización diferida:", e);
     }
@@ -282,6 +293,77 @@ class AppRouter {
     } catch (e) {
       console.warn("Aviso al consultar visitas_estaciones:", e);
     }
+  }
+
+  // Cargar cromos secretos encontrados (tabla cromos_secretos)
+  async loadChromesFromSupabase(userId) {
+    if (!supabase || !userId || String(userId).startsWith("local-")) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('cromos_secretos')
+        .select('*')
+        .eq('usuario_id', userId);
+
+      if (data && !error) {
+        data.forEach(c => {
+          // El stand se identifica por su código único (ej. STAND01)
+          const standObj = this.standsList.find(s => s.code === c.stand_codigo);
+          const key = standObj ? standObj.id : c.stand_codigo;
+          this.state.cromos[key] = {
+            found: true,
+            metodoIngreso: c.metodo_ingreso || 'qr',
+            foundAt: c.fecha_encuentro
+          };
+        });
+        this.saveLocalState();
+      }
+    } catch (e) {
+      console.warn("Aviso al consultar cromos_secretos:", e);
+    }
+  }
+
+  // Registrar un cromo secreto encontrado (misión secreta, no afecta progreso ni rango)
+  // metodoIngreso: 'qr' | 'manual'
+  async unlockChrome(standId, metodoIngreso = 'qr') {
+    if (this.state.cromos[standId]) return false;
+
+    const metodo = metodoIngreso === 'qr' ? 'qr' : 'manual';
+    const chromeData = {
+      found: true,
+      metodoIngreso: metodo,
+      foundAt: new Date().toISOString()
+    };
+
+    this.state.cromos[standId] = chromeData;
+    this.saveLocalState();
+
+    // Persistir en Supabase si el usuario tiene ID real (no local)
+    if (supabase && this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+      const standObj = this.standsList.find(s => s.id === standId);
+      try {
+        await supabase
+          .from('cromos_secretos')
+          .insert([{
+            usuario_id: this.state.user.id,
+            stand_codigo: standObj ? standObj.code : standId,
+            metodo_ingreso: metodo,
+            fecha_encuentro: chromeData.foundAt
+          }]);
+      } catch (e) {
+        console.warn("Aviso al persistir cromo en Supabase:", e);
+      }
+    }
+
+    return true;
+  }
+
+  isChromeFound(standId) {
+    return !!(this.state.cromos[standId] && this.state.cromos[standId].found);
+  }
+
+  getChromeCount() {
+    return Object.keys(this.state.cromos).filter(k => this.state.cromos[k]?.found).length;
   }
 
   // Registrar un sello obtenido (en Supabase y localStorage)
@@ -377,6 +459,7 @@ class AppRouter {
     localStorage.removeItem(STORAGE_KEY);
     this.state.user = null;
     this.state.stamps = {};
+    this.state.cromos = {};
     this.showToast("Sesión cerrada.");
   }
 
@@ -396,8 +479,11 @@ class AppRouter {
     this.render();
   }
 
-  navigateQr(standId) {
+  // navigateQr(standId)           → escaneo de sello (validación de stand)
+  // navigateQr(standId, 'cromo')  → escaneo de cromo secreto (misión secreta)
+  navigateQr(standId, mode = "sello") {
     this.qrTargetStandId = standId;
+    this.qrMode = mode === "cromo" ? "cromo" : "sello";
     this.navigate("qr");
   }
 
@@ -418,7 +504,7 @@ class AppRouter {
     } else if (this.currentRoute === "map") {
       viewElement = createMapView(this);
     } else if (this.currentRoute === "qr") {
-      viewElement = createQrView(this, this.qrTargetStandId);
+      viewElement = createQrView(this, this.qrTargetStandId, this.qrMode);
     } else if (this.currentRoute === "passport") {
       viewElement = createPassportView(this);
     } else if (this.currentRoute === "ranks") {

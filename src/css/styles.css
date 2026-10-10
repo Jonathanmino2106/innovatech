@@ -135,3 +135,67 @@ select, input, button, textarea { font-family: inherit; }
               0 12px 26px -6px rgba(8, 47, 73, 0.6),
               inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
+
+/* ============================================================
+   CROMOS SECRETOS (misión secreta por stand)
+   ============================================================ */
+
+/* Efecto foil/iridiscente del cromo encontrado */
+.cromo-foil {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(115deg,
+      rgba(19, 184, 212, 0.34) 0%,
+      rgba(139, 92, 246, 0.30) 25%,
+      rgba(245, 158, 11, 0.30) 50%,
+      rgba(16, 185, 129, 0.28) 75%,
+      rgba(19, 184, 212, 0.34) 100%);
+  background-size: 220% 220%;
+  animation: foilShift 8s ease-in-out infinite;
+}
+
+/* Barra de brillo que recorre el cromo como una pegatina metálica */
+.cromo-foil::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -70%;
+  width: 55%;
+  height: 230%;
+  transform: rotate(18deg);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+  animation: foilShine 5s ease-in-out infinite;
+}
+
+@keyframes foilShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes foilShine {
+  0% { left: -70%; }
+  55%, 100% { left: 145%; }
+}
+
+/* Respeta la preferencia del sistema por menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .cromo-foil,
+  .cromo-foil::after {
+    animation: none;
+  }
+}
+
+/* Casillero de cromo pendiente (silueta rayada / bloqueada) */
+.cromo-locked {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(148, 163, 184, 0.10) 0px,
+    rgba(148, 163, 184, 0.10) 8px,
+    rgba(148, 163, 184, 0) 8px,
+    rgba(148, 163, 184, 0) 16px
+  );
+}

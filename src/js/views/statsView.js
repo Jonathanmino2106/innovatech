@@ -71,6 +71,31 @@ export function createStatsView(app) {
 
     </div>
 
+    <!-- Tabla: Actividad Digital -->
+    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
+      <div>
+        <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold block mb-1">
+          TABLA · ACTIVIDAD DIGITAL
+        </span>
+        <h3 class="text-lg font-extrabold text-slate-900">Actividad digital</h3>
+        <p class="text-xs text-slate-500 mt-0.5">Sellos, escaneos y misiones secretas registradas en la feria.</p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="text-left text-slate-400 font-mono uppercase text-[10px] tracking-wider border-b border-slate-100">
+              <th class="py-2 pr-3 font-bold">Métrica</th>
+              <th class="py-2 font-bold text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody id="stats-digital-body">
+            <tr><td colspan="2" class="py-6 text-center text-slate-400">Cargando datos…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Tabla de Clasificación -->
     <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
       <div>
@@ -154,6 +179,22 @@ export function createStatsView(app) {
       : [];
   }
 
+  // Cromos secretos encontrados (misión secreta): tabla cromos_secretos
+  async function fetchChromeCount() {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('cromos_secretos')
+          .select('id');
+        // Sin error → el valor real (aunque sea 0); con error (tabla ausente) → fallback local
+        if (!error && data) return data.length;
+      } catch (e) {
+        console.warn("Stats: fallo al consultar cromos_secretos:", e);
+      }
+    }
+    return app.getChromeCount();
+  }
+
   function standName(code) {
     const stand = app.standsList.find((s) => s.code === code);
     return stand ? stand.name : code;
@@ -169,7 +210,47 @@ export function createStatsView(app) {
     return "⭐".repeat(n) + ` ${n}.0`;
   }
 
-  function renderAll(rows, source, profiles) {
+  function renderDigitalActivity(rows, chromeCount) {
+    const tbody = container.querySelector("#stats-digital-body");
+    if (!tbody) return;
+
+    const qrCount = rows.filter((r) => r.metodo_ingreso === "qr").length;
+
+    // Clases literales completas: Tailwind las detecta en el código fuente (JIT por build)
+    const TONES = {
+      cyan: "bg-cyan-50 text-cyan-700 border-cyan-100",
+      emerald: "bg-emerald-50 text-emerald-700 border-emerald-100",
+      amber: "bg-amber-50 text-amber-700 border-amber-100"
+    };
+
+    const metrics = [
+      { label: "QR escaneados", value: qrCount, icon: "scan", tone: TONES.cyan },
+      { label: "Misiones completadas", value: rows.length, icon: "stamp", tone: TONES.emerald },
+      { label: "Misiones secretas encontradas", value: chromeCount, icon: "gem", tone: TONES.amber }
+    ];
+
+    tbody.innerHTML = metrics
+      .map(
+        (m) => `
+          <tr class="border-b border-slate-50 last:border-0">
+            <td class="py-2.5 pr-3">
+              <span class="inline-flex items-center gap-2.5 font-semibold text-slate-800">
+                <span class="w-7 h-7 rounded-xl border flex items-center justify-center shrink-0 ${m.tone}">
+                  <i data-lucide="${m.icon}" class="w-3.5 h-3.5"></i>
+                </span>
+                ${m.label}
+              </span>
+            </td>
+            <td class="py-2.5 text-right font-mono font-bold text-slate-900">${m.value}</td>
+          </tr>
+        `
+      )
+      .join("");
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  function renderAll(rows, source, profiles, chromeCount) {
     const badge = container.querySelector("#stats-source-badge");
     badge.innerHTML = source === "supabase"
       ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>Supabase · en vivo</span>'
@@ -180,6 +261,9 @@ export function createStatsView(app) {
 
     // Gráfico de perfiles: independiente de las visitas (usa pasaportes creados)
     renderVisitorsChart(profiles);
+
+    // Actividad digital: se renderiza siempre (aunque no haya visitas aún)
+    renderDigitalActivity(rows, chromeCount);
 
     if (!rows.length) {
       emptyMsg.classList.remove("hidden");
@@ -323,11 +407,12 @@ export function createStatsView(app) {
 
   // Carga inicial
   (async () => {
-    const [{ rows, source }, profiles] = await Promise.all([
+    const [{ rows, source }, profiles, chromeCount] = await Promise.all([
       fetchVisitRows(),
-      fetchVisitorProfiles()
+      fetchVisitorProfiles(),
+      fetchChromeCount()
     ]);
-    renderAll(rows, source, profiles);
+    renderAll(rows, source, profiles, chromeCount);
     if (window.lucide) window.lucide.createIcons();
   })();
 

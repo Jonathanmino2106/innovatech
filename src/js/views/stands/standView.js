@@ -10,6 +10,13 @@ export function createStandView(app, info) {
 
   const isCompleted = app.isStandCompleted(info.id);
 
+  // Misión secreta: cromo escondido propio de cada stand
+  const cromo = info.cromo || null;
+  const cromoFound = cromo ? app.isChromeFound(info.id) : false;
+  const cromoDate = cromoFound && app.state.cromos[info.id]?.foundAt
+    ? new Date(app.state.cromos[info.id].foundAt).toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+    : null;
+
   container.innerHTML = `
     <!-- Botón Volver al mapa -->
     <button id="btn-back-map" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors">
@@ -72,6 +79,75 @@ export function createStandView(app, info) {
       </div>
 
     </div>
+
+    ${cromo ? `
+    <!-- Misión Secreta: el cromo escondido de ESTA estación -->
+    <div class="rounded-3xl border ${
+      cromoFound ? 'border-amber-300/60 cromo-foil' : 'border-slate-700/60'
+    } bg-[#0f2742] text-white p-6 shadow-xl relative overflow-hidden">
+      <div class="relative z-10 space-y-4">
+
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-400/15 text-amber-300 border border-amber-400/30">
+              <i data-lucide="sparkles" class="w-3 h-3"></i>
+              Misión secreta
+            </span>
+            ${cromoFound ? `
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-400/15 text-emerald-300 border border-emerald-400/30">
+              <i data-lucide="check" class="w-3 h-3"></i>
+              Encontrado
+            </span>` : ''}
+          </div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 shrink-0">${cromo.code}</span>
+        </div>
+
+        ${cromoFound ? `
+        <!-- Estado: cromo coleccionado (efecto foil) -->
+        <div>
+          <h3 class="text-xl font-extrabold leading-snug">¡Cromo encontrado!</h3>
+          <p class="text-xs text-slate-300 mt-1">Sumaste esta pieza a tu colección oculta. Queda registrada en tu pasaporte.</p>
+        </div>
+
+        <div class="bg-black/25 border border-white/10 rounded-2xl p-4 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-[#0f2742] flex items-center justify-center shrink-0 shadow-lg">
+            <i data-lucide="gem" class="w-7 h-7"></i>
+          </div>
+          <div class="min-w-0">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold block">Cromo ${cromo.code}</span>
+            <h4 class="text-lg font-extrabold truncate">${cromo.name}</h4>
+            <span class="text-[10px] text-slate-300">Rareza ${cromo.rarity}${cromoDate ? ` · obtenido el ${cromoDate}` : ""}</span>
+          </div>
+        </div>
+
+        <button id="btn-goto-collection" class="w-full min-h-12 bg-white/10 hover:bg-white/20 border border-white/15 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-all active:scale-95">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span>Ver mi colección de cromos</span>
+        </button>
+        ` : `
+        <!-- Estado: pista de la misión secreta -->
+        <div>
+          <h3 class="text-xl font-extrabold leading-snug">Hay un cromo escondido en esta estación.</h3>
+          <p class="text-xs text-slate-300 mt-1">Encontrá la pegatina oculta, escaneá su QR y sumalo a tu colección. No suma sellos: es sólo para quien mira bien.</p>
+        </div>
+
+        <div class="bg-black/25 border border-dashed border-amber-400/40 rounded-2xl p-4 flex items-start gap-3">
+          <i data-lucide="search" class="w-4 h-4 text-amber-300 shrink-0 mt-0.5"></i>
+          <div>
+            <span class="text-[10px] font-mono uppercase tracking-widest text-amber-300/80 font-bold block mb-0.5">Pista</span>
+            <p class="text-xs text-slate-200 leading-relaxed">${cromo.hint}</p>
+          </div>
+        </div>
+
+        <button id="btn-find-cromo" class="w-full min-h-12 bg-amber-400 hover:bg-amber-300 active:scale-95 text-[#0f2742] font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-all shadow-md">
+          <i data-lucide="scan-search" class="w-4 h-4"></i>
+          <span>Buscar el cromo</span>
+        </button>
+        `}
+
+      </div>
+    </div>
+    ` : ""}
   `;
 
   // Listeners
@@ -82,6 +158,21 @@ export function createStandView(app, info) {
   container.querySelector("#btn-scan-qr").addEventListener("click", () => {
     app.navigateQr(info.id);
   });
+
+  // Misión secreta: escanear el QR del cromo escondido (abre el escáner en modo cromo)
+  const btnFindCromo = container.querySelector("#btn-find-cromo");
+  if (btnFindCromo) {
+    btnFindCromo.addEventListener("click", () => {
+      app.navigateQr(info.id, "cromo");
+    });
+  }
+
+  const btnGotoCollection = container.querySelector("#btn-goto-collection");
+  if (btnGotoCollection) {
+    btnGotoCollection.addEventListener("click", () => {
+      app.navigate("passport");
+    });
+  }
 
   return container;
 }

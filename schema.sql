@@ -52,6 +52,22 @@ CREATE TABLE visitas_estaciones (
 CREATE INDEX idx_visitas_usuario ON visitas_estaciones (usuario_id);
 CREATE INDEX idx_visitas_stand ON visitas_estaciones (stand_codigo);
 
+-- 3.5 Tabla Puente de Cromos Secretos (misiones secretas) ---------------------
+-- Cada stand esconde un cromo físico con su propio QR (CROMO01..CROMO05).
+-- El visitante lo registra desde la sección "Misión secreta" de ese stand.
+-- UNIQUE (usuario_id, stand_codigo) evita duplicados si re-escanea el mismo cromo.
+CREATE TABLE cromos_secretos (
+    id SERIAL PRIMARY KEY,
+    usuario_id INT REFERENCES usuarios(id) ON DELETE CASCADE,
+    stand_codigo VARCHAR(20) REFERENCES stands(id_stand) ON DELETE CASCADE,
+    fecha_encuentro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    metodo_ingreso VARCHAR(10) CHECK (metodo_ingreso IN ('qr', 'manual')),
+    UNIQUE (usuario_id, stand_codigo)
+);
+
+CREATE INDEX idx_cromos_usuario ON cromos_secretos (usuario_id);
+CREATE INDEX idx_cromos_stand ON cromos_secretos (stand_codigo);
+
 -- 4. Seguridad (RLS) --------------------------------------------------------
 -- La app es una web kiosco pública sin login de usuarios reales, por lo que
 -- se habilitan políticas permisivas para el rol "anon" (clave publishable).
@@ -60,6 +76,7 @@ CREATE INDEX idx_visitas_stand ON visitas_estaciones (stand_codigo);
 ALTER TABLE usuarios ENABLE ROW LEVEL SECURITY;
 ALTER TABLE stands ENABLE ROW LEVEL SECURITY;
 ALTER TABLE visitas_estaciones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cromos_secretos ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY public_usuarios_select ON usuarios FOR SELECT USING (true);
 CREATE POLICY public_usuarios_insert ON usuarios FOR INSERT WITH CHECK (true);
@@ -69,3 +86,7 @@ CREATE POLICY public_stands_select ON stands FOR SELECT USING (true);
 
 CREATE POLICY public_visitas_select ON visitas_estaciones FOR SELECT USING (true);
 CREATE POLICY public_visitas_insert ON visitas_estaciones FOR INSERT WITH CHECK (true);
+
+CREATE POLICY public_cromos_select ON cromos_secretos FOR SELECT USING (true);
+CREATE POLICY public_cromos_insert ON cromos_secretos FOR INSERT WITH CHECK (true);
+CREATE POLICY public_cromos_update ON cromos_secretos FOR UPDATE USING (true);

@@ -14,7 +14,14 @@ export const STAND_02_INFO = {
   badgeLabel: "STAND 02 · AERO-ROBÓTICA",
   location: "Pabellón A / Zona de Vuelo Exterior",
   mapCoords: { x: 53, y: 73 },
-  description: "Cuadricópteros con LiDAR y cámaras estereoscópicas capaces de navegar y esquivar obstáculos sin señal GPS."
+  description: "Cuadricópteros con LiDAR y cámaras estereoscópicas capaces de navegar y esquivar obstáculos sin señal GPS.",
+  // Misión secreta: cromo escondido en esta estación (pista editable por el organizador)
+  cromo: {
+    code: "CROMO02",
+    name: "Ala de Carbono",
+    rarity: "Rara",
+    hint: "Los drones vuelan alto, pero el cromo no: está escondido en el piso de la zona de vuelo, detrás de la pista de aterrizaje."
+  }
 };
 
 export function renderStand02(app) {

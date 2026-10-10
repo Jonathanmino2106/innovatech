@@ -2,15 +2,25 @@
  * INNOVATECH - Vista de Escaneo QR (cámara real) y Plan B Código Manual
  * - Cámara: decodificador QR real con html5-qrcode (facingMode trasera).
  * - Plan B: pestaña con input alfanumérico para fallas de cámara/permisos/luz.
+ * - Dos modos:
+ *     mode 'sello' → valida el QR del stand (STAND01..05) y sella el pasaporte.
+ *     mode 'cromo' → valida el QR del cromo secreto (CROMO01..05) de la misión secreta.
  * - Tras sellar: valoración por estrellas (1-5) persistida en Supabase.
  */
 
-export function createQrView(app, targetStandId = null) {
+export function createQrView(app, targetStandId = null, mode = "sello") {
   const container = document.createElement("div");
   container.className = "w-full max-w-lg mx-auto px-4 py-6 md:py-8 space-y-5 pb-24 md:pb-12";
 
   const stands = app.standsList;
+  const isCromo = mode === "cromo";
+
   const currentStand = stands.find(s => s.id === targetStandId) || stands.find(s => !app.isStandCompleted(s.id)) || stands[0];
+  const cromo = currentStand.cromo || null;
+
+  // Códigos según modo: cromo secreto o validación de stand
+  const targetCode = isCromo && cromo ? cromo.code : currentStand.code;
+  const codeLabel = isCromo ? "Código del cromo" : "Código del stand";
 
   container.innerHTML = `
     <!-- Botón Volver -->
@@ -22,13 +32,15 @@ export function createQrView(app, targetStandId = null) {
     <!-- Encabezado (vista-sello-qr.png) -->
     <div class="text-center">
       <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold block mb-1">
-        VALIDACIÓN FÍSICA
+        ${isCromo ? "MISIÓN SECRETA" : "VALIDACIÓN FÍSICA"}
       </span>
       <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">
-        Activa tu sello.
+        ${isCromo ? "Encontrá el cromo." : "Activa tu sello."}
       </h2>
       <p class="text-xs text-slate-500 mt-1">
-        Estás en <span class="font-bold text-slate-800">${currentStand.name}</span>. Escanea el QR institucional o usa el código manual.
+        Estás en <span class="font-bold text-slate-800">${currentStand.name}</span>. Escanea el QR ${
+          isCromo ? "de la pegatina escondida" : "institucional de la estación"
+        } o usa el código manual.
       </p>
     </div>
 
@@ -52,7 +64,7 @@ export function createQrView(app, targetStandId = null) {
         <div id="qr-reader" class="w-full min-h-[13rem] bg-[#0f2742] rounded-2xl overflow-hidden"></div>
 
         <p class="text-center text-[11px] text-slate-400 leading-relaxed">
-          Apunta la cámara al QR institucional de la estación. Si falla la cámara o los permisos, usa la pestaña <b>Código</b>.
+          Apunta la cámara al QR ${isCromo ? "del cromo escondido" : "institucional de la estación"}. Si falla la cámara o los permisos, usa la pestaña <b>Código</b>.
         </p>
       </div>
 
@@ -60,30 +72,32 @@ export function createQrView(app, targetStandId = null) {
       <div id="panel-code" class="space-y-4 hidden">
         <div>
           <label for="input-code-val" class="block text-xs font-bold text-slate-700 mb-1.5">
-            Código del stand
+            ${codeLabel}
           </label>
           <input
             id="input-code-val"
             type="text"
-            placeholder="${currentStand.code}"
+            placeholder="${targetCode}"
             maxlength="10"
             autocapitalize="characters"
             autocomplete="off"
             class="w-full min-h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-mono text-base font-bold uppercase text-slate-900 placeholder-slate-400 tracking-wider focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
           />
           <p class="text-[11px] text-slate-500 mt-1.5">
-            Prueba con <button id="btn-quick-fill" class="text-cyan-700 font-bold underline">${currentStand.code}</button>.
+            Prueba con <button id="btn-quick-fill" class="text-cyan-700 font-bold underline">${targetCode}</button>.
           </p>
         </div>
 
-        <button id="btn-submit-code" class="w-full min-h-12 bg-[#132840] hover:bg-[#0a1827] active:scale-95 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-all shadow-md">
-          <span>Validar y guardar sello</span>
+        <button id="btn-submit-code" class="w-full min-h-12 ${
+          isCromo ? "bg-amber-500 hover:bg-amber-400" : "bg-[#132840] hover:bg-[#0a1827]"
+        } active:scale-95 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-all shadow-md">
+          <span>${isCromo ? "Registrar cromo encontrado" : "Validar y guardar sello"}</span>
           <i data-lucide="check" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <!-- Caja Verde de Sello Guardado + Valoración por Estrellas -->
-      <div id="box-success" class="${app.isStandCompleted(currentStand.id) ? '' : 'hidden'} p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
+      <!-- Caja Verde de Sello Guardado + Valoración por Estrellas (modo sello) -->
+      <div id="box-success" class="${!isCromo && app.isStandCompleted(currentStand.id) ? '' : 'hidden'} p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
         <div class="flex items-center gap-2 text-emerald-800 font-bold text-xs">
           <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
           <span>Sello guardado</span>
@@ -108,6 +122,29 @@ export function createQrView(app, targetStandId = null) {
         </button>
       </div>
 
+      <!-- Caja Dorada de Cromo Encontrado (modo cromo) -->
+      <div id="box-cromo" class="${isCromo && app.isChromeFound(currentStand.id) ? '' : 'hidden'} p-4 rounded-2xl bg-amber-50 border border-amber-300 space-y-3">
+        <div class="flex items-center gap-2 text-amber-900 font-bold text-xs">
+          <i data-lucide="gem" class="w-4 h-4 text-amber-600"></i>
+          <span>¡Cromo encontrado!</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-[#0f2742] flex items-center justify-center shrink-0">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <div class="min-w-0">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-amber-700 font-bold block">${cromo ? cromo.code : ""}</span>
+            <h4 class="text-sm font-extrabold text-slate-900 truncate">${cromo ? cromo.name : "Cromo secreto"}</h4>
+            ${cromo ? `<span class="text-[10px] text-amber-800">Rareza ${cromo.rarity}</span>` : ""}
+          </div>
+        </div>
+
+        <button id="btn-goto-collection" class="w-full min-h-12 bg-white hover:bg-amber-100 border border-amber-300 text-amber-900 font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
+          <span>Ver mi colección</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
     </div>
   `;
 
@@ -117,6 +154,7 @@ export function createQrView(app, targetStandId = null) {
   const panelCam = container.querySelector("#panel-cam");
   const panelCode = container.querySelector("#panel-code");
   const boxSuccess = container.querySelector("#box-success");
+  const boxCromo = container.querySelector("#box-cromo");
   const inputCode = container.querySelector("#input-code-val");
 
   function activateTab(which) {
@@ -166,18 +204,54 @@ export function createQrView(app, targetStandId = null) {
   }
 
   function onScanSuccess(text) {
-    const val = String(text).trim().toUpperCase();
-    const found = stands.find(s => s.code.toUpperCase() === val);
-    if (!found) {
-      app.showToast("QR no reconocido. Verifica el código del stand.");
-      return;
-    }
-    stopScanner();
-    completeStamp(found, "qr");
+    handleCode(String(text).trim().toUpperCase(), "qr");
   }
 
   // Limpieza al navegar fuera de la vista (evita que la cámara siga activa)
   app.viewCleanup = () => { stopScanner(); };
+
+  // ---- Validación de código según modo (cámara o manual) ----
+  const standByCode = (val) => stands.find(s => s.code.toUpperCase() === val);
+  const standByCromoCode = (val) => stands.find(s => s.cromo && s.cromo.code.toUpperCase() === val);
+
+  function showError(msg) {
+    stopScanner();
+    inputCode.classList.add("animate-shake", "border-rose-500");
+    app.showToast(msg);
+    setTimeout(() => inputCode.classList.remove("animate-shake"), 400);
+  }
+
+  function handleCode(rawVal, metodo = "manual") {
+    const val = String(rawVal || "").trim().toUpperCase();
+    if (!val) return;
+
+    if (isCromo) {
+      const foundCromo = standByCromoCode(val);
+      if (foundCromo) {
+        stopScanner();
+        completeCromo(foundCromo, metodo);
+        return;
+      }
+      if (standByCode(val)) {
+        showError("Ese QR es de validación de stand, no del cromo. Mirá la pista y buscá la pegatina.");
+        return;
+      }
+      showError(`Código de cromo no válido. Prueba con ${targetCode}`);
+      return;
+    }
+
+    const foundStand = standByCode(val);
+    if (foundStand) {
+      stopScanner();
+      completeStamp(foundStand, metodo);
+      return;
+    }
+    if (standByCromoCode(val)) {
+      showError('Parece un QR de cromo secreto. Volvé a la estación y usá "Buscar el cromo".');
+      return;
+    }
+    showError("Código no válido. Prueba con " + targetCode);
+  }
 
   // ---- Lógica de sello y valoración ----
   function completeStamp(stand, metodo = "manual") {
@@ -187,24 +261,23 @@ export function createQrView(app, targetStandId = null) {
     if (window.lucide) window.lucide.createIcons();
   }
 
+  // ---- Lógica del cromo secreto (misión secreta) ----
+  function completeCromo(stand, metodo = "manual") {
+    app.unlockChrome(stand.id, metodo);
+    boxCromo.classList.remove("hidden");
+    app.showToast(`¡Cromo encontrado: ${stand.cromo.name}!`);
+    if (window.lucide) window.lucide.createIcons();
+  }
+
   tabCam.addEventListener("click", () => activateTab("cam"));
   tabCode.addEventListener("click", () => activateTab("code"));
 
   container.querySelector("#btn-quick-fill").addEventListener("click", () => {
-    inputCode.value = currentStand.code;
+    inputCode.value = targetCode;
   });
 
   function submitManual() {
-    const val = inputCode.value.trim().toUpperCase();
-    const found = stands.find(s => s.code.toUpperCase() === val);
-    if (found) {
-      // Plan B: ingreso manual alfanumérico → método 'manual'
-      completeStamp(found, "manual");
-    } else {
-      inputCode.classList.add("animate-shake", "border-rose-500");
-      app.showToast("Código no válido. Prueba con " + currentStand.code);
-      setTimeout(() => inputCode.classList.remove("animate-shake"), 400);
-    }
+    handleCode(inputCode.value, "manual");
   }
 
   container.querySelector("#btn-submit-code").addEventListener("click", submitManual);
@@ -218,6 +291,13 @@ export function createQrView(app, targetStandId = null) {
   container.querySelector("#btn-goto-passport").addEventListener("click", () => {
     app.navigate("passport");
   });
+
+  const btnGotoCollection = container.querySelector("#btn-goto-collection");
+  if (btnGotoCollection) {
+    btnGotoCollection.addEventListener("click", () => {
+      app.navigate("passport");
+    });
+  }
 
   container.querySelector("#btn-back-station").addEventListener("click", () => {
     app.navigate(currentStand.id);

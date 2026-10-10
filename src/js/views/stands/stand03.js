@@ -14,7 +14,14 @@ export const STAND_03_INFO = {
   badgeLabel: "STAND 03 · FLOTAS INTELIGENTES",
   location: "Pabellón B / Zona Logística Central",
   mapCoords: { x: 74, y: 55 },
-  description: "Plataformas robóticas móviles omnidireccionales para almacenes automatizados y esquiva dinámica de peatones."
+  description: "Plataformas robóticas móviles omnidireccionales para almacenes automatizados y esquiva dinámica de peatones.",
+  // Misión secreta: cromo escondido en esta estación (pista editable por el organizador)
+  cromo: {
+    code: "CROMO03",
+    name: "Rueda Omnidireccional",
+    rarity: "Común",
+    hint: "Seguí la línea marcada en el suelo: el cromo espera al final del carril del AGV, pegado a la estantería."
+  }
 };
 
 export function renderStand03(app) {

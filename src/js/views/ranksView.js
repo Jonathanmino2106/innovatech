@@ -20,6 +20,10 @@ export function createRanksView(app) {
 
   const completed = app.getCompletedCount();
 
+  // Colección oculta de cromos secretos (contador discreto al pie de la vista)
+  const chromeTotal = app.standsList.filter(s => s.cromo).length;
+  const chromeCount = app.getChromeCount();
+
   container.innerHTML = `
     <!-- Cabecera Rangos (vista-rangos.png) -->
     <div>
@@ -79,6 +83,12 @@ export function createRanksView(app) {
           `;
         }).join("")}
       </div>
+    </div>
+
+    <!-- Contador discreto de cromos secretos (sólo lo ve quien mira hasta el final) -->
+    <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-1.5 text-[10px] text-slate-300 select-none">
+      <i data-lucide="gem" class="w-3 h-3"></i>
+      <span class="font-mono tracking-wider">cromos ${chromeCount}/${chromeTotal}</span>
     </div>
   `;
 

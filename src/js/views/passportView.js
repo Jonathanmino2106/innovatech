@@ -14,6 +14,10 @@ export function createPassportView(app) {
   const completed = stands.filter(s => app.isStandCompleted(s.id)).length;
   const percent = Math.round((completed / total) * 100);
 
+  // Colección oculta de cromos secretos (no afecta sellos ni rango)
+  const chromeTotal = stands.filter(s => s.cromo).length;
+  const chromeCount = app.getChromeCount();
+
   // Rango alcanzado (módulo único de verdad: ranks.js)
   const rankTitle = getRankTitle(completed);
 
@@ -104,6 +108,52 @@ export function createPassportView(app) {
           `;
         }).join("")}
       </div>
+    </div>
+
+    <!-- Grilla de Cromos Secretos (colección oculta, misión secreta) -->
+    <div class="space-y-3 pt-2">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold block">CROMOS SECRETOS</span>
+          <h3 class="text-lg font-extrabold text-slate-900">Colección oculta</h3>
+        </div>
+        <span class="text-xs font-semibold text-amber-600">${chromeCount}/${chromeTotal} cromos</span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+        ${stands.filter(s => s.cromo).map(stand => {
+          const cromo = stand.cromo;
+          const found = app.isChromeFound(stand.id);
+          return `
+            <div
+              data-open-stand="${stand.id}"
+              class="cursor-pointer p-4 rounded-2xl border shadow-xs transition-all flex flex-col justify-between min-h-[110px] active:scale-[0.98] ${
+                found
+                  ? 'cromo-foil bg-[#0f2742] border-amber-300/60 hover:border-amber-200'
+                  : 'cromo-locked bg-white border-slate-200/80 hover:border-slate-300'
+              }"
+            >
+              <div class="w-7 h-7 rounded-xl flex items-center justify-center ${
+                found ? 'bg-amber-300 text-[#0f2742]' : 'bg-slate-100 text-slate-400'
+              }">
+                <i data-lucide="${found ? 'gem' : 'lock'}" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="relative z-10">
+                <h4 class="text-xs font-bold truncate ${found ? 'text-white' : 'text-slate-900'}">
+                  ${found ? cromo.name : '???'}
+                </h4>
+                <span class="text-[10px] ${found ? 'text-amber-200' : 'text-slate-400'}">
+                  ${found ? `Cromo ${stand.num} · ${cromo.rarity}` : `Stand ${stand.num} · sin encontrar`}
+                </span>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+      <p class="text-[11px] text-slate-400 leading-relaxed">
+        Cada estación esconde un cromo con su propia pista. No suman sellos ni rango: son sólo para quien mira bien.
+      </p>
     </div>
 
     <!-- Cerrar Sesión -->
