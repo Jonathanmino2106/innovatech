@@ -41,6 +41,12 @@ const server = http.createServer((req, res) => {
     filePath = path.join(filePath, "index.html");
   }
 
+  // Fallback de favicon: si piden /favicon.ico y no existe uno en la raíz,
+  // servimos el logo corporativo en PNG (evita el 404 en la consola del navegador).
+  if (urlPath === "/favicon.ico" && !fs.existsSync(filePath)) {
+    filePath = path.join(ROOT, "assets", "innovatech.png");
+  }
+
   // Bloquear accesos fuera del directorio raíz
   if (!filePath.startsWith(ROOT)) {
     res.writeHead(403).end("403 Forbidden");
