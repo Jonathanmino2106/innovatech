@@ -66,8 +66,12 @@ export function createHeader(app) {
       </button>
     </nav>
 
-    <!-- Botón Superior "Validar visita" -->
+    <!-- Botón Superior "Validar visita" + Cerrar sesión -->
     <div class="flex items-center gap-2">
+      ${user ? `
+      <button id="btn-header-logout" title="Cerrar sesión" aria-label="Cerrar sesión" class="hidden sm:flex w-11 h-11 items-center justify-center rounded-xl text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-all">
+        <i data-lucide="log-out" class="w-4 h-4"></i>
+      </button>` : ''}
       <button id="btn-header-validate" class="min-h-11 bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-semibold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
         <i data-lucide="scan" class="w-3.5 h-3.5"></i>
         <span>Validar visita</span>
@@ -91,6 +95,27 @@ export function createHeader(app) {
     const nextPending = app.standsList.find(s => !app.isStandCompleted(s.id)) || app.standsList[0];
     app.navigateQr(nextPending.id);
   });
+
+  // Cerrar sesión desde el header (confirmación en dos toques)
+  const btnHeaderLogout = header.querySelector("#btn-header-logout");
+  if (btnHeaderLogout) {
+    let logoutTimer = null;
+    btnHeaderLogout.addEventListener("click", () => {
+      if (btnHeaderLogout.dataset.confirm === "1") {
+        clearTimeout(logoutTimer);
+        app.logout();
+        app.navigate("crea-pasaporte");
+        return;
+      }
+      btnHeaderLogout.dataset.confirm = "1";
+      btnHeaderLogout.classList.add("text-rose-400", "bg-rose-950", "animate-pulse");
+      app.showToast("¿Cerrar sesión? Toca otra vez para confirmar.");
+      logoutTimer = setTimeout(() => {
+        btnHeaderLogout.dataset.confirm = "";
+        btnHeaderLogout.classList.remove("text-rose-400", "bg-rose-950", "animate-pulse");
+      }, 4000);
+    });
+  }
 
   return header;
 }

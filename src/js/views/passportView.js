@@ -17,6 +17,9 @@ export function createPassportView(app) {
   // Rango alcanzado (módulo único de verdad: ranks.js)
   const rankTitle = getRankTitle(completed);
 
+  // Código del visitante (para recordarlo desde el tablero)
+  const userCode = (app.state.user && (app.state.user.passportCode || app.state.user.codigo_pasaporte)) || "—";
+
   container.innerHTML = `
     <!-- Cabecera del Pasaporte (vista-pasaporte.png) -->
     <div class="flex items-start justify-between">
@@ -102,7 +105,44 @@ export function createPassportView(app) {
         }).join("")}
       </div>
     </div>
+
+    <!-- Cerrar Sesión -->
+    <div class="pt-4 border-t border-slate-200/80 space-y-3">
+      <button
+        id="btn-logout"
+        class="w-full min-h-12 bg-white hover:bg-rose-50 active:scale-[0.99] text-rose-600 font-semibold text-sm px-4 py-3 rounded-xl flex items-center justify-center gap-2 border border-rose-200 transition-all"
+      >
+        <i data-lucide="log-out" class="w-4 h-4"></i>
+        <span id="btn-logout-text">Cerrar sesión</span>
+      </button>
+      <p class="text-[11px] text-slate-400 text-center leading-relaxed">
+        Tu código <span class="font-mono font-bold text-slate-600">${userCode}</span> queda guardado:
+        puedes recuperar tu recorrido desde "Ya tengo mi pasaporte".
+      </p>
+    </div>
   `;
+
+  // Cerrar sesión con confirmación en dos toques (evita toques accidentales en el kiosco)
+  const btnLogout = container.querySelector("#btn-logout");
+  const btnLogoutText = container.querySelector("#btn-logout-text");
+  let confirmTimer = null;
+
+  btnLogout.addEventListener("click", () => {
+    if (btnLogout.dataset.confirm === "1") {
+      clearTimeout(confirmTimer);
+      app.logout();
+      app.navigate("crea-pasaporte");
+      return;
+    }
+    btnLogout.dataset.confirm = "1";
+    btnLogout.classList.add("ring-2", "ring-rose-300", "bg-rose-50");
+    btnLogoutText.textContent = "¿Seguro? Toca otra vez para cerrar";
+    confirmTimer = setTimeout(() => {
+      btnLogout.dataset.confirm = "";
+      btnLogout.classList.remove("ring-2", "ring-rose-300", "bg-rose-50");
+      btnLogoutText.textContent = "Cerrar sesión";
+    }, 4000);
+  });
 
   container.querySelectorAll("div[data-open-stand]").forEach(card => {
     card.addEventListener("click", () => {
