@@ -24,7 +24,7 @@ Para gestionar la información de manera estructurada y segura en la nube (acces
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     nickname VARCHAR(50) NOT NULL,
-    curso VARCHAR(50),
+    tipo_visitante VARCHAR(20) CHECK (tipo_visitante IN ('Alumno', 'Profesor', 'Familiar', 'Visitante')),
     codigo_pasaporte VARCHAR(20) UNIQUE NOT NULL,
     rango_actual VARCHAR(30) DEFAULT 'Visitante',
     progreso INT DEFAULT 0,
@@ -53,7 +53,7 @@ CREATE TABLE visitas_estaciones (
 #### 3.1 Correspondencia Esquema ↔ Frontend
 | Tabla.Columna | Uso en el código (`src/js/app.js`) |
 | :--- | :--- |
-| `usuarios.nickname` / `usuarios.curso` | Registro del formulario "Crear mi pasaporte" (RF-01). |
+| `usuarios.nickname` / `usuarios.tipo_visitante` | Registro del formulario "Crear mi pasaporte" (RF-01). El perfil (Alumno, Profesor, Familiar, Visitante) alimenta el gráfico de perfiles de visitantes. |
 | `usuarios.codigo_pasaporte` | Código único autogenerado `FT26-####` para recuperar sesión (RF-02/RF-03). |
 | `usuarios.progreso` / `usuarios.rango_actual` | Se recalculan y actualizan en cada sello obtenido (RF-04/RF-08). |
 | `visitas_estaciones.stand_codigo` | Llega como `stand_codigo: "STAND01"` (FK a `stands.id_stand`). |

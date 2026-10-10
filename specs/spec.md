@@ -16,7 +16,7 @@ En lugar de utilizar planillas de papel o sistemas locales dependientes de una r
 ### 2. Flujo de Usuario y Funcionamiento General
 El ciclo de vida de la interacción de un usuario con el sistema se compone de las siguientes fases operativas:
 
-1. **Acceso y Registro Ligero:** El usuario abre la Web App desde su dispositivo móvil (vía navegador web con conexión a internet). Ingresa su seudónimo (*nickname*) y curso opcional sin requerir contraseñas complejas. El sistema le asigna un código único de pasaporte.
+1. **Acceso y Registro Ligero:** El usuario abre la Web App desde su dispositivo móvil (vía navegador web con conexión a internet). Ingresa su seudónimo (*nickname*) y selecciona su perfil de visitante (Alumno, Profesor, Familiar o Visitante) sin requerir contraseñas complejas. El sistema le asigna un código único de pasaporte.
 2. **Panel Principal (Home):** Visualiza una barra de avance porcentual (0%-100%), su rango actual de gamificación y accesos rápidos al mapa interactivo y al escáner.
 3. **Recorrido y Mapa:** El usuario consulta el plano esquemático de la feria para identificar la ubicación y estado (pendiente o visitado) de cada stand.
 4. **Validación Dual (QR o Plan B):** Al llegar al stand, el usuario escanea el código QR institucional mediante la cámara del celular. Si el dispositivo presenta fallas de hardware, poca luz o problemas de permisos de cámara, puede ingresar directamente un código alfanumérico alternativo (ej. `STAND01`).
@@ -57,7 +57,7 @@ El módulo de estadísticas es una herramienta fundamental para los organizadore
 ### 6. Especificación de Requerimientos
 
 #### 6.1 Requerimientos Funcionales (RF)
-* **RF-01: Identificación y Registro Inicial.** El sistema permite al usuario ingresar un seudónimo (*nickname*) y curso opcional para generar un identificador único de recorrido.
+* **RF-01: Identificación y Registro Inicial.** El sistema permite al usuario ingresar un seudónimo (*nickname*) y seleccionar su perfil de visitante (Alumno, Profesor, Familiar o Visitante) para generar un identificador único de recorrido.
 * **RF-02: Recuperación de Sesión por Código de Pasaporte.** El sistema incluye una vista de inicio de sesión que permite ingresar el código único asignado previamente (ej. FT26-2470) para consultar la base de datos de Supabase y restaurar instantáneamente todos los sellos, visitas y el porcentaje de avance del usuario.
 * **RF-03: Generación de Pasaporte Digital.** El sistema asigna un código único de seguimiento al usuario tras el registro inicial para vincular su progreso.
 * **RF-04: Visualización del Panel de Recorrido (Home).** El sistema muestra un resumen gráfico del avance del usuario en porcentaje (0%-100%), los sellos activos y un acceso directo a la siguiente estación recomendada.

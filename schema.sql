@@ -16,7 +16,7 @@
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     nickname VARCHAR(50) NOT NULL,
-    curso VARCHAR(50),
+    tipo_visitante VARCHAR(20) CHECK (tipo_visitante IN ('Alumno', 'Profesor', 'Familiar', 'Visitante')),
     codigo_pasaporte VARCHAR(20) UNIQUE NOT NULL,
     rango_actual VARCHAR(30) DEFAULT 'Visitante',
     progreso INT DEFAULT 0,

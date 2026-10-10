@@ -33,8 +33,8 @@ export function createStatsView(app) {
       </span>
     </div>
 
-    <!-- Fila de 2 gráficos: Torta + Dona -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Fila de 3 gráficos: Torta + Dona + Perfiles -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
       <!-- Gráfico de Torta: visitas por stand -->
       <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
@@ -55,6 +55,17 @@ export function createStatsView(app) {
         <h3 class="text-lg font-extrabold text-slate-900 mb-3">Cámara QR vs Código manual</h3>
         <div class="relative w-full max-w-xs mx-auto">
           <canvas id="chart-doughnut"></canvas>
+        </div>
+      </div>
+
+      <!-- Gráfico de Dona: perfiles de visitantes -->
+      <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+        <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold block mb-1">
+          PERFILES
+        </span>
+        <h3 class="text-lg font-extrabold text-slate-900 mb-3">¿Quién visita la feria?</h3>
+        <div class="relative w-full max-w-xs mx-auto">
+          <canvas id="chart-visitors"></canvas>
         </div>
       </div>
 
@@ -94,6 +105,7 @@ export function createStatsView(app) {
   // Destruir gráficos previos si la vista se re-renderiza
   function safeDestroy(canvasId) {
     const canvas = container.querySelector(`#${canvasId}`);
+    if (!canvas) return null;
     const prev = window.Chart && window.Chart.getChart ? window.Chart.getChart(canvas) : null;
     if (prev) prev.destroy();
     return canvas;
@@ -124,6 +136,24 @@ export function createStatsView(app) {
     return { rows, source: "local" };
   }
 
+  // Perfiles de visitantes: pasaportes creados por tipo (columna tipo_visitante)
+  async function fetchVisitorProfiles() {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('usuarios')
+          .select('tipo_visitante');
+        if (!error && data) return data;
+      } catch (e) {
+        console.warn("Stats: fallo al consultar perfiles:", e);
+      }
+    }
+    // Fallback local: el usuario de este dispositivo
+    return app.state.user && app.state.user.tipo_visitante
+      ? [{ tipo_visitante: app.state.user.tipo_visitante }]
+      : [];
+  }
+
   function standName(code) {
     const stand = app.standsList.find((s) => s.code === code);
     return stand ? stand.name : code;
@@ -139,7 +169,7 @@ export function createStatsView(app) {
     return "⭐".repeat(n) + ` ${n}.0`;
   }
 
-  function renderAll(rows, source) {
+  function renderAll(rows, source, profiles) {
     const badge = container.querySelector("#stats-source-badge");
     badge.innerHTML = source === "supabase"
       ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>Supabase · en vivo</span>'
@@ -147,6 +177,9 @@ export function createStatsView(app) {
 
     const emptyMsg = container.querySelector("#stats-empty-msg");
     const tbody = container.querySelector("#stats-table-body");
+
+    // Gráfico de perfiles: independiente de las visitas (usa pasaportes creados)
+    renderVisitorsChart(profiles);
 
     if (!rows.length) {
       emptyMsg.classList.remove("hidden");
@@ -214,6 +247,53 @@ export function createStatsView(app) {
       }
     });
 
+    // ---- Dona: perfiles de visitantes ----
+    function renderVisitorsChart(profiles) {
+      const PROFILE_ORDER = ["Alumno", "Profesor", "Familiar", "Visitante"];
+      const PROFILE_COLORS = {
+        Alumno: "#13b8d4",
+        Profesor: "#0f2742",
+        Familiar: "#f59e0b",
+        Visitante: "#10b981"
+      };
+
+      const byProfile = {};
+      profiles.forEach((p) => {
+        const key = p.tipo_visitante && PROFILE_ORDER.includes(p.tipo_visitante) ? p.tipo_visitante : null;
+        if (key) byProfile[key] = (byProfile[key] || 0) + 1;
+      });
+      const profileLabels = PROFILE_ORDER.filter((k) => byProfile[k]);
+
+      const visitorsCanvas = safeDestroy("chart-visitors");
+      if (!visitorsCanvas || !visitorsCanvas.parentElement) return; // ya reemplazado por mensaje
+      if (!profileLabels.length) {
+        visitorsCanvas.parentElement.innerHTML =
+          '<p class="text-xs text-slate-400 text-center py-10 leading-relaxed">Aún no hay pasaportes con perfil registrado.<br />Los datos aparecerán aquí en vivo.</p>';
+        return;
+      }
+      new window.Chart(visitorsCanvas, {
+        type: "doughnut",
+        data: {
+          labels: profileLabels,
+          datasets: [{
+            data: profileLabels.map((k) => byProfile[k]),
+            backgroundColor: profileLabels.map((k) => PROFILE_COLORS[k]),
+            borderWidth: 2,
+            borderColor: "#ffffff"
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 1.1,
+          cutout: "58%",
+          plugins: {
+            legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } }
+          }
+        }
+      });
+    }
+
     // ---- Tabla de clasificación ----
     const total = rows.length;
     tbody.innerHTML = standCodes
@@ -243,8 +323,11 @@ export function createStatsView(app) {
 
   // Carga inicial
   (async () => {
-    const { rows, source } = await fetchVisitRows();
-    renderAll(rows, source);
+    const [{ rows, source }, profiles] = await Promise.all([
+      fetchVisitRows(),
+      fetchVisitorProfiles()
+    ]);
+    renderAll(rows, source, profiles);
     if (window.lucide) window.lucide.createIcons();
   })();
 

@@ -31,7 +31,7 @@ export function createCreaPasaporteView(app) {
             Dale un nombre<br />a tu recorrido.
           </h2>
           <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-            Solo necesitamos un nickname. El curso es opcional y nos ayuda a leer cómo se mueve la feria.
+            Solo necesitamos un nickname y tu perfil. Así sabemos quién visita la feria.
           </p>
         </div>
 
@@ -67,17 +67,20 @@ export function createCreaPasaporteView(app) {
             </div>
 
             <div>
-              <label for="create-grade" class="block text-xs font-bold text-slate-700 mb-1.5">
-                Curso <span class="text-slate-400 font-normal">(opcional)</span>
+              <label for="create-visitor-type" class="block text-xs font-bold text-slate-700 mb-1.5">
+                Perfil de visitante <span class="text-cyan-600">*</span>
               </label>
-              <input
-                id="create-grade"
-                type="text"
-                placeholder="Ej. 2º medio B"
-                maxlength="30"
-                autocomplete="off"
-                class="w-full min-h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
-              />
+              <select
+                id="create-visitor-type"
+                required
+                class="w-full min-h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
+              >
+                <option value="" disabled selected>Selecciona tu perfil</option>
+                <option value="Alumno">Alumno</option>
+                <option value="Profesor">Profesor</option>
+                <option value="Familiar">Familiar</option>
+                <option value="Visitante">Visitante</option>
+              </select>
             </div>
 
             <button
@@ -157,14 +160,14 @@ export function createCreaPasaporteView(app) {
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const nickname = container.querySelector("#create-nickname").value.trim();
-        const grade = container.querySelector("#create-grade").value.trim();
-        if (!nickname) return;
+        const visitorType = container.querySelector("#create-visitor-type").value;
+        if (!nickname || !visitorType) return;
 
         btnSubmit.disabled = true;
         btnText.textContent = "Conectando con Supabase...";
 
         try {
-          createdUser = await app.createSession(nickname, grade);
+          createdUser = await app.createSession(nickname, visitorType);
           isCreated = true;
           render();
         } catch (err) {

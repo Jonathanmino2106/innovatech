@@ -89,13 +89,14 @@ class AppRouter {
   }
 
   // Crear usuario en Supabase (tabla usuarios) y guardar en localStorage
-  async createSession(nickname, grade = "") {
+  // visitorType: 'Alumno' | 'Profesor' | 'Familiar' | 'Visitante' (columna tipo_visitante)
+  async createSession(nickname, visitorType = "Visitante") {
     const randomDigits = Math.floor(1000 + Math.random() * 9000);
     const codigo_pasaporte = `FT26-${randomDigits}`;
 
     const newUserPayload = {
       nickname: nickname.trim(),
-      curso: grade ? grade.trim() : null,
+      tipo_visitante: visitorType,
       codigo_pasaporte,
       rango_actual: "Visitante",
       progreso: 0,
