@@ -108,18 +108,3 @@ Abrí la hoja en el navegador, presioná **Imprimir** (al 100%, sin "ajustar a p
    para que `tailwind.generated.css` se recompile solo cada vez que agregás o cambiás clases. Si no lo dejás corriendo, volvé a ejecutar `npm run dev` (o `npm run css`) después de tocar clases.
 4. Abre `http://localhost:3000` y presiona `F12` para activar la vista de emulación móvil (ej. iPhone 14 o Galaxy S20).
 5. **Escáner QR:** la cámara requiere un contexto seguro — en local funciona en `localhost`, y en producción Vercel provee HTTPS automáticamente.
-
----
-
-## 📌 Pendientes
-
-> Nota de seguimiento. Borrar cada punto cuando quede resuelto.
-
-- [ ] **Ejecutar el SQL de cromos en Supabase (bloqueante antes de la feria).**
-  Abrir Supabase → SQL Editor y correr la sección **3.5 Tabla Puente de Cromos Secretos** de `schema.sql`
-  (tabla `cromos_secretos` + índices + RLS).
-  *Si no se ejecuta, no se rompe nada: los cromos funcionan en modo local, pero no sincronizan entre dispositivos
-  ni alimentan la tabla "Actividad digital" con datos reales.*
-
-- [x] **Generar la hoja imprimible de QR de validación de stands (`STAND01`…`STAND05`).**
-  Resuelto: `tools/generar-qr.js` ahora genera ambas hojas — `npm run qr:stands`, `npm run qr:cromos` o `npm run qr:todo`.

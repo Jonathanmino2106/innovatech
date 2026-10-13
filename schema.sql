@@ -53,6 +53,7 @@ CREATE INDEX idx_visitas_usuario ON visitas_estaciones (usuario_id);
 CREATE INDEX idx_visitas_stand ON visitas_estaciones (stand_codigo);
 
 -- 3.5 Tabla Puente de Cromos Secretos (misiones secretas) ---------------------
+-- [APLICADO en el proyecto de Supabase el 2026-10-13]
 -- Cada stand esconde un cromo físico con su propio QR (CROMO01..CROMO05).
 -- El visitante lo registra desde la sección "Misión secreta" de ese stand.
 -- UNIQUE (usuario_id, stand_codigo) evita duplicados si re-escanea el mismo cromo.
