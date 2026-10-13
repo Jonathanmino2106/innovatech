@@ -40,11 +40,28 @@ function loadLocalEnv() {
 const localEnv = loadLocalEnv();
 
 // process.env (Vercel) tiene prioridad sobre .env local
-const SUPABASE_URL = process.env.SUPABASE_URL || localEnv.SUPABASE_URL || "";
-const SUPABASE_ANON_KEY =
+let SUPABASE_URL = process.env.SUPABASE_URL || localEnv.SUPABASE_URL || "";
+let SUPABASE_ANON_KEY =
   process.env.SUPABASE_ANON_KEY || localEnv.SUPABASE_ANON_KEY || "";
 
-// 2. Generar src/js/config.js (valores escapados de forma segura)
+// 2. Si NO hay credenciales disponibles pero el config.js existente ya las
+//    trae (p. ej. un clon nuevo de GitHub, que lo incluye), NO se pisa:
+//    sin este guardas, `npm run dev` borraría las credenciales válidas y la
+//    app caería en modo solo-local sin que se entienda por qué.
+if ((!SUPABASE_URL || !SUPABASE_ANON_KEY) && fs.existsSync(CONFIG_PATH)) {
+  const actual = fs.readFileSync(CONFIG_PATH, "utf8");
+  if (actual.includes("SUPABASE_CONFIGURED = true")) {
+    console.log(
+      "⚠ Sin .env: se conserva el src/js/config.js existente (ya tiene credenciales)."
+    );
+    console.log(
+      "  Para configurarlas en otra PC: copiá .env.example a .env y completalo."
+    );
+    process.exit(0);
+  }
+}
+
+// 3. Generar src/js/config.js (valores escapados de forma segura)
 const content = `/**
  * ARCHIVO GENERADO AUTOMÁTICAMENTE POR build.js - NO EDITAR A MANO.
  * Fuente de verdad: variables de entorno (.env local o Vercel Environment Variables).
