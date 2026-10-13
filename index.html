@@ -31,6 +31,23 @@
 </head>
 <body class="h-full w-full bg-[#f8fafc] font-sans text-slate-800 flex flex-col justify-start items-center overflow-x-hidden selection:bg-cyan-500 selection:text-white">
 
+  <!-- ============================================================
+       SPLASH SCREEN (video de carga)
+       Va estático en el HTML y NO inyectado por JS: así aparece al
+       instante, antes de que se resuelvan los módulos ES.
+       La lógica de cierre vive en el <script> de abajo del todo.
+       ============================================================ -->
+  <div id="splash-screen" class="splash-screen">
+    <video
+      id="splash-video"
+      class="splash-video"
+      src="./assets/splash-screen.mp4"
+      autoplay muted playsinline preload="auto"
+      aria-hidden="true"
+    ></video>
+    <button id="splash-skip" class="splash-skip" type="button">Saltar</button>
+  </div>
+
   <!-- Contenedor Principal SPA donde el router inyecta la app completa -->
   <div id="app" class="w-full flex flex-col items-center min-h-screen">
     <!-- Montado dinámicamente por app.js -->
@@ -41,6 +58,68 @@
     <i data-lucide="check-circle" class="w-4 h-4 text-cyan-400 shrink-0"></i>
     <span id="global-toast-msg" class="truncate">Sello obtenido: Robótica & IA</span>
   </div>
+
+  <!-- ============================================================
+       Lógica del SPLASH SCREEN
+       Script inline (no módulo) para que corra de inmediato.
+       Reglas de seguridad: NUNCA puede bloquear la app.
+       ============================================================ -->
+  <script>
+    (function () {
+      var STORAGE_KEY = "innovatech_splash_v1";
+      var MAX_MS = 16000; // el video dura 15s: 1s de margen
+
+      var splash = document.getElementById("splash-screen");
+      var video = document.getElementById("splash-video");
+      var skip = document.getElementById("splash-skip");
+      if (!splash || !video) return;
+
+      var closed = false;
+
+      // Soltar el buffer: si no, el navegador sigue bajando el video por detrás
+      function releaseVideo() {
+        try {
+          video.pause();
+          video.removeAttribute("src");
+          video.load();
+        } catch (e) { /* nada */ }
+      }
+
+      function hideSplash() {
+        if (closed) return;
+        closed = true;
+        try { sessionStorage.setItem(STORAGE_KEY, "1"); } catch (e) { /* modo privado */ }
+        splash.classList.add("splash-out");
+        releaseVideo();
+        setTimeout(function () { splash.classList.add("splash-gone"); }, 480);
+      }
+
+      // 1) ¿Ya se vio en esta pestaña?  2) ¿El usuario pidió menos movimiento?
+      var alreadySeen = false;
+      try { alreadySeen = sessionStorage.getItem(STORAGE_KEY) === "1"; } catch (e) { /* modo privado */ }
+      var reducedMotion = window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (alreadySeen || reducedMotion) {
+        closed = true;
+        releaseVideo();
+        splash.parentNode.removeChild(splash);
+        return;
+      }
+
+      // Cierres garantizados
+      skip.addEventListener("click", hideSplash);
+      video.addEventListener("ended", hideSplash);
+      video.addEventListener("error", hideSplash);
+      setTimeout(hideSplash, MAX_MS);
+
+      // Autoplay puede ser rechazado por el navegador: no nos quedamos colgados
+      var playing = video.play();
+      if (playing && typeof playing.catch === "function") {
+        playing.catch(function () { /* el timeout se encarga */ });
+      }
+    })();
+  </script>
 
   <!-- Script Modular ES6 Principal -->
   <script type="module" src="./src/js/app.js"></script>
