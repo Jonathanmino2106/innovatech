@@ -13,6 +13,8 @@ innovatech\
 ├── tailwind.config.js             # Config de Tailwind (colores theme.* y fonts), antes era inline en index.html
 ├── schema.sql                     # FUENTE DE VERDAD de la base de datos (ejecutar en Supabase)
 ├── server.js                      # Servidor estático local sin dependencias
+├── tools\
+│   └── generar-qr.js              # Genera los QR de la feria (stands + cromos) con sus hojas imprimibles
 ├── src\
 │   ├── components\
 │   │   └── navbar.js              # Header superior + navbar inferior móvil
@@ -57,21 +59,27 @@ Las credenciales **nunca** se escriben a mano en el código fuente (regla de la 
 
 ---
 
-## 🖨️ QR de los cromos secretos (organizador)
+## 🖨️ QR de la feria (organizador)
 
-Cada stand esconde un cromo físico con su propio QR (`CROMO01`…`CROMO05`). Para imprimirlos:
+Hay dos tipos de QR físicos, ambos generados desde el mismo script (`tools/generar-qr.js`):
+
+| Comando | Contenido del QR | Dónde va pegado |
+|---|---|---|
+| `npm run qr:stands` | `STAND01`…`STAND05` | En la mesa o exhibidor **visible** de cada stand (valida el sello) |
+| `npm run qr:cromos` | `CROMO01`…`CROMO05` | **Oculto** en cada stand, donde dice la pista (misión secreta) |
+| `npm run qr:todo` | ambas hojas | — |
 
 ```bash
-npm run qr:cromos
+npm run qr:todo
 ```
 
-Eso genera:
-- `assets/cromos/CROMOxx.png` — los 5 QR (900×900 px, nivel de corrección de errores H).
-- `qr-cromos.html` — hoja A4 lista para imprimir con guías de corte y la pista de cada cromo.
+Eso genera, por cada tipo:
+- `assets/stands/STANDxx.png` y `assets/cromos/CROMOxx.png` — QR de 900×900 px con nivel de corrección de errores H (se leen aunque estén rayados o un poco torcidos).
+- `qr-stands.html` y `qr-cromos.html` — hojas A4 listas para imprimir, con guías de corte y los datos de cada tarjeta.
 
-Abrí `qr-cromos.html` en el navegador, presioná **Imprimir** (al 100%, sin "ajustar a página"), cortá por la línea punteada y pegá cada QR **oculto** en su stand. El script lee los cromos desde `src/js/views/stands/standXX.js`, así que si cambiás un nombre o una pista, volvé a correr `npm run qr:cromos`.
+Abrí la hoja en el navegador, presioná **Imprimir** (al 100%, sin "ajustar a página"), cortá por la línea punteada y pegá cada QR en su lugar. El script lee los datos desde `src/js/views/stands/standXX.js`, así que si cambiás un nombre, una ubicación o una pista, volvé a correr el comando correspondiente.
 
-> La app valida el **texto** del QR (ej. `CROMO01`), no la imagen: si reimprimís uno, asegurate de que el contenido sea exactamente ese código.
+> La app valida el **texto** del QR (ej. `STAND01` o `CROMO01`), no la imagen: si reimprimís uno, asegurate de que el contenido sea exactamente ese código.
 
 ---
 
@@ -89,7 +97,7 @@ Abrí `qr-cromos.html` en el navegador, presioná **Imprimir** (al 100%, sin "aj
 1. Abre la carpeta del proyecto en **VS Code**.
 2. En la terminal ejecuta:
    ```bash
-   npm install       # primera vez: instala Tailwind CLI (devDependency)
+   npm install       # primera vez: instala Tailwind CLI y qrcode (devDependencies)
    npm run dev
    ```
    (Node.js ≥ 18. Genera `config.js` desde el `.env`, compila el CSS de Tailwind y levanta el servidor estático local.)
@@ -113,6 +121,5 @@ Abrí `qr-cromos.html` en el navegador, presioná **Imprimir** (al 100%, sin "aj
   *Si no se ejecuta, no se rompe nada: los cromos funcionan en modo local, pero no sincronizan entre dispositivos
   ni alimentan la tabla "Actividad digital" con datos reales.*
 
-- [ ] **Generar la hoja imprimible de QR de validación de stands (`STAND01`…`STAND05`).**
-  Falta agregarle un flag a `tools/generar-qr-cromos.js` (ej. `npm run qr:stands`) para que emita
-  la segunda hoja con los QR de sellado de cada estación, junto a la de cromos.
+- [x] **Generar la hoja imprimible de QR de validación de stands (`STAND01`…`STAND05`).**
+  Resuelto: `tools/generar-qr.js` ahora genera ambas hojas — `npm run qr:stands`, `npm run qr:cromos` o `npm run qr:todo`.

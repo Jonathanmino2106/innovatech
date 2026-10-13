@@ -6,7 +6,9 @@
   "scripts": {
     "css": "tailwindcss -i ./src/css/tailwind.css -o ./src/css/tailwind.generated.css --minify",
     "css:watch": "tailwindcss -i ./src/css/tailwind.css -o ./src/css/tailwind.generated.css --watch",
-    "qr:cromos": "node tools/generar-qr-cromos.js",
+    "qr:stands": "node tools/generar-qr.js stands",
+    "qr:cromos": "node tools/generar-qr.js cromos",
+    "qr:todo": "node tools/generar-qr.js all",
     "build": "node build.js && npm run css",
     "start": "npm run build && node server.js",
     "dev": "node build.js && npm run css && node server.js"

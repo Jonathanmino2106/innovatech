@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR de validación de stands · INNOVATECH</title>
+  <!-- ARCHIVO GENERADO POR "npm run qr:stands" - NO EDITAR A MANO -->
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .toolbar {
+      max-width: 800px;
+      margin: 0 auto 20px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .toolbar h1 { font-size: 16px; margin: 0 0 4px; }
+    .toolbar p { font-size: 12px; color: #64748b; margin: 0; line-height: 1.5; }
+    .toolbar button {
+      background: #13b8d4;
+      color: #fff;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 48px;
+    }
+    .toolbar button:hover { background: #0ea5be; }
+
+    .sheet {
+      max-width: 800px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+    .card {
+      background: #fff;
+      border: 2px dashed #94a3b8;
+      border-radius: 18px;
+      padding: 20px;
+      text-align: center;
+      break-inside: avoid;
+    }
+    .qr-wrap img {
+      width: 190px;
+      height: 190px;
+      image-rendering: pixelated;
+      display: block;
+      margin: 0 auto;
+    }
+    .meta { margin-top: 14px; }
+    .code {
+      display: inline-block;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #0f2742;
+      background: #f1f7f9;
+      border: 1px solid #e0edee;
+      border-radius: 999px;
+      padding: 3px 12px;
+    }
+    .meta h3 { font-size: 18px; margin: 10px 0 2px; }
+    .stand { font-size: 12px; color: #64748b; margin: 0; }
+    .rarity { font-size: 11px; font-weight: 700; color: #b45309; margin: 6px 0 0; text-transform: uppercase; letter-spacing: 1px; }
+    .hint { font-size: 11px; color: #94a3b8; margin: 8px 0 0; line-height: 1.5; font-style: italic; }
+
+    @media (max-width: 640px) { .sheet { grid-template-columns: 1fr; } }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .toolbar { display: none; }
+      .sheet { max-width: none; gap: 10mm; }
+      .card { border-radius: 12px; padding: 8mm; }
+      @page { size: A4 portrait; margin: 12mm; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div>
+      <h1>QR de validación de stands · 5 tarjetas</h1>
+      <p>Imprimí, cortá por la línea punteada y pegá cada QR en la <b>mesa o exhibidor visible</b> de su stand.<br />
+      Usá impresión al 100% (sin ajustar a página) y buen contraste: la cámara del celular debe leerlo desde ~30 cm.</p>
+      <p style="margin-top:6px">Valida el sello del pasaporte (botón "Validar visita" o el QR del stand).</p>
+    </div>
+    <button onclick="window.print()">🖨️ Imprimir hoja</button>
+  </div>
+
+  <div class="sheet">
+
+      <div class="card">
+        <div class="qr-wrap">
+          <img src="./assets/stands/STAND01.png" alt="QR STAND01" />
+        </div>
+        <div class="meta">
+          <span class="code">STAND01</span>
+          <h3>Robótica Industrial &amp; Brazos Articulados</h3>
+          <p class="stand">Stand 01 · Robótica · Laboratorio de Tecnología</p>
+          <p class="rarity">Ubicación: Entrada / Patio central / Laboratorio de Tecnología</p>
+          
+        </div>
+      </div>
+      <div class="card">
+        <div class="qr-wrap">
+          <img src="./assets/stands/STAND02.png" alt="QR STAND02" />
+        </div>
+        <div class="meta">
+          <span class="code">STAND02</span>
+          <h3>Drones Autónomos &amp; Visión Espacial</h3>
+          <p class="stand">Stand 02 · Robótica Aérea · Zona de Vuelo</p>
+          <p class="rarity">Ubicación: Pabellón A / Zona de Vuelo Exterior</p>
+          
+        </div>
+      </div>
+      <div class="card">
+        <div class="qr-wrap">
+          <img src="./assets/stands/STAND03.png" alt="QR STAND03" />
+        </div>
+        <div class="meta">
+          <span class="code">STAND03</span>
+          <h3>Robots Móviles &amp; Vehículos Autónomos (AGV)</h3>
+          <p class="stand">Stand 03 · Logística Autónoma · Pabellón B</p>
+          <p class="rarity">Ubicación: Pabellón B / Zona Logística Central</p>
+          
+        </div>
+      </div>
+      <div class="card">
+        <div class="qr-wrap">
+          <img src="./assets/stands/STAND04.png" alt="QR STAND04" />
+        </div>
+        <div class="meta">
+          <span class="code">STAND04</span>
+          <h3>Robots Humanoides &amp; Locomoción Bípeda</h3>
+          <p class="stand">Stand 04 · Bípedos · Arena de Pruebas</p>
+          <p class="rarity">Ubicación: Pabellón B / Arena de Pruebas</p>
+          
+        </div>
+      </div>
+      <div class="card">
+        <div class="qr-wrap">
+          <img src="./assets/stands/STAND05.png" alt="QR STAND05" />
+        </div>
+        <div class="meta">
+          <span class="code">STAND05</span>
+          <h3>Exoesqueletos &amp; Robótica Médica</h3>
+          <p class="stand">Stand 05 · Biónica · Ala Médica Central</p>
+          <p class="rarity">Ubicación: Pabellón Central / Ala Médica Biónica</p>
+          
+        </div>
+      </div>
+  </div>
+</body>
+</html>
