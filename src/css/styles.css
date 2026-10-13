@@ -20,8 +20,34 @@ html .text-2xl       { font-size: 1.7rem; line-height: 2.1rem; }
 /* Selects e inputs heredan el tamaño correcto */
 select, input, button, textarea { font-family: inherit; }
 
+/* ============================================================
+   BARRA INFERIOR MÓVIL
+   - Altura base de 4rem + el área segura del sistema (iPhone),
+     SUMÁNDOLA a la altura: si el padding se mete dentro de una
+     altura fija (border-box) los íconos se comprimen y se salen
+     de la caja.
+   - Fondo sólido y sin backdrop-blur: el blur sobre un elemento
+     fixed producía un "fantasma" blanco al hacer scroll en
+     iOS/Android y forzaba repintado costoso.
+   ============================================================ */
+.bottom-nav-safe {
+  height: calc(4rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0.75rem);
+}
+
+/* En móvil, cada vista respira por encima de la barra inferior
+   (64px + área segura). Va después del CSS de Tailwind, así que
+   le gana por orden sin necesidad de !important. */
+@media (max-width: 767px) {
+  .app-view {
+    padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .no-scrollbar::-webkit-scrollbar {

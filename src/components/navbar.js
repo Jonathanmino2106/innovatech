@@ -79,9 +79,9 @@ export function createHeader(app) {
     </nav>
 
     <!-- Botón Superior "Validar visita" + Cerrar sesión -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-1.5 md:gap-2">
       ${user ? `
-      <button id="btn-header-logout" title="Cerrar sesión" aria-label="Cerrar sesión" class="hidden sm:flex w-11 h-11 items-center justify-center rounded-xl text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-all">
+      <button id="btn-header-logout" title="Cerrar sesión" aria-label="Cerrar sesión" class="flex w-10 h-10 md:w-11 md:h-11 items-center justify-center rounded-xl text-slate-400 hover:text-rose-400 active:text-rose-400 hover:bg-slate-800 active:bg-slate-800 transition-all">
         <i data-lucide="log-out" class="w-4 h-4"></i>
       </button>` : ''}
       <button id="btn-header-validate" class="hidden md:flex min-h-11 bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-semibold text-xs px-3.5 py-2 rounded-xl items-center gap-1.5 shadow-sm transition-all">
@@ -135,7 +135,9 @@ export function createHeader(app) {
 export function createBottomNavbar(app) {
   const nav = document.createElement("nav");
   nav.id = "mobile-bottom-navbar";
-  nav.className = "md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/95 border-t border-slate-200 backdrop-blur-md px-2 flex items-center safe-bottom z-40 shadow-lg";
+  // La altura y el área segura los resuelve .bottom-nav-safe (styles.css):
+  // antes había un h-16 fijo con padding interno, lo que comprimía los íconos.
+  nav.className = "md:hidden fixed bottom-0 left-0 right-0 bottom-nav-safe bg-white border-t border-slate-200 px-2 flex items-center z-40 shadow-[0_-4px_16px_rgba(15,39,66,0.08)]";
 
   const r = app.currentRoute;
   const itemClass = (active) => `flex flex-col items-center justify-center w-14 transition-all ${

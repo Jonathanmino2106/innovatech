@@ -566,6 +566,8 @@ class AppRouter {
       viewElement = this.state.user ? createHomeView(this) : createCreaPasaporteView(this);
     }
 
+    // Clase común para el respiro inferior móvil (ver .app-view en styles.css)
+    viewElement.classList.add("app-view");
     this.appRoot.appendChild(viewElement);
 
     // 3. Barra inferior de navegación sólo visible cuando ya existe usuario autenticado
