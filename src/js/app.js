@@ -284,6 +284,9 @@ class AppRouter {
           const key = standObj ? standObj.id : v.stand_codigo;
           this.state.stamps[key] = {
             unlocked: true,
+            // Importante: preservar el método de ingreso (qr | manual), si no
+            // toda sincronización borra el dato y las estadísticas lo muestran como 'manual'.
+            metodoIngreso: v.metodo_ingreso || 'manual',
             valoracion: v.valoracion ?? null,
             unlockedAt: v.fecha_visita
           };
@@ -325,10 +328,32 @@ class AppRouter {
 
   // Registrar un cromo secreto encontrado (misión secreta, no afecta progreso ni rango)
   // metodoIngreso: 'qr' | 'manual'
-  async unlockChrome(standId, metodoIngreso = 'qr') {
-    if (this.state.cromos[standId]) return false;
-
+  // Igual que los sellos: si estaba en 'manual' y luego se escanea el QR real, se mejora a 'qr'.
+  async unlockChrome(standId, metodoIngreso = 'manual') {
     const metodo = metodoIngreso === 'qr' ? 'qr' : 'manual';
+    const existing = this.state.cromos[standId];
+
+    if (existing) {
+      if (!existing.found || metodo !== 'qr' || existing.metodoIngreso === 'qr') return false;
+
+      existing.metodoIngreso = 'qr';
+      this.saveLocalState();
+
+      if (supabase && this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+        const standObj = this.standsList.find(s => s.id === standId);
+        try {
+          await supabase
+            .from('cromos_secretos')
+            .update({ metodo_ingreso: 'qr' })
+            .eq('usuario_id', this.state.user.id)
+            .eq('stand_codigo', standObj ? standObj.code : standId);
+        } catch (e) {
+          console.warn("Aviso al actualizar metodo_ingreso del cromo:", e);
+        }
+      }
+      return true;
+    }
+
     const chromeData = {
       found: true,
       metodoIngreso: metodo,
@@ -368,10 +393,34 @@ class AppRouter {
 
   // Registrar un sello obtenido (en Supabase y localStorage)
   // metodoIngreso: 'qr' | 'manual'  (columna metodo_ingreso de visitas_estaciones)
+  // Si el sello ya existía en 'manual' y ahora llega un escaneo real de cámara,
+  // se "mejora" el método a 'qr' y se corrige la fila en la nube.
   async unlockStamp(standId, metodoIngreso = 'manual') {
-    if (this.state.stamps[standId]) return false;
-
     const metodo = metodoIngreso === 'qr' ? 'qr' : 'manual';
+    const existing = this.state.stamps[standId];
+
+    if (existing) {
+      // Ya sellado y no hay mejora de método → no se registra de nuevo
+      if (!existing.unlocked || metodo !== 'qr' || existing.metodoIngreso === 'qr') return false;
+
+      // Upgrade manual → qr (el visitante escaneó el QR físico de la estación)
+      existing.metodoIngreso = 'qr';
+      this.saveLocalState();
+
+      if (supabase && this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+        const standObj = this.standsList.find(s => s.id === standId);
+        try {
+          await supabase
+            .from('visitas_estaciones')
+            .update({ metodo_ingreso: 'qr' })
+            .eq('usuario_id', this.state.user.id)
+            .eq('stand_codigo', standObj ? standObj.code : standId);
+        } catch (e) {
+          console.warn("Aviso al actualizar metodo_ingreso:", e);
+        }
+      }
+      return true;
+    }
 
     const stampData = {
       unlocked: true,

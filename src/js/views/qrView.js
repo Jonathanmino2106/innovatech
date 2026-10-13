@@ -59,12 +59,31 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
         </button>
       </div>
 
-      <!-- Panel Cámara (lector QR real) -->
+      <!-- Panel Cámara (lector QR real) — SIEMPRE la primera opción -->
       <div id="panel-cam" class="space-y-3">
-        <div id="qr-reader" class="w-full min-h-[13rem] bg-[#0f2742] rounded-2xl overflow-hidden"></div>
+        <div class="relative">
+          <div id="qr-reader" class="w-full min-h-[13rem] bg-[#0f2742] rounded-2xl overflow-hidden"></div>
 
-        <p class="text-center text-[11px] text-slate-400 leading-relaxed">
-          Apunta la cámara al QR ${isCromo ? "del cromo escondido" : "institucional de la estación"}. Si falla la cámara o los permisos, usa la pestaña <b>Código</b>.
+          <!-- Estado: solicitando permiso de cámara -->
+          <div id="cam-status" class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center px-6 bg-[#0f2742] rounded-2xl">
+            <i data-lucide="loader-2" class="w-6 h-6 text-cyan-300 animate-spin"></i>
+            <p class="text-[11px] text-slate-300 leading-relaxed">Solicitando permiso de cámara…</p>
+          </div>
+
+          <!-- Estado: error de cámara (NO cambia de pestaña sola: el usuario decide) -->
+          <div id="cam-error" class="hidden absolute inset-0 flex flex-col items-center justify-center gap-3 text-center px-6 bg-[#0f2742] rounded-2xl">
+            <i data-lucide="camera-off" class="w-6 h-6 text-rose-300"></i>
+            <p id="cam-error-msg" class="text-[11px] text-slate-300 leading-relaxed">
+              No se pudo acceder a la cámara.
+            </p>
+            <button id="btn-use-manual" class="min-h-11 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-bold transition-all">
+              Usar código manual
+            </button>
+          </div>
+        </div>
+
+        <p id="cam-hint" class="text-center text-[11px] text-slate-400 leading-relaxed">
+          Apuntá la cámara al QR ${isCromo ? "del cromo escondido" : "institucional de la estación"}.
         </p>
       </div>
 
@@ -102,7 +121,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
           <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
           <span>Sello guardado</span>
         </div>
-        <p class="text-xs text-emerald-700 leading-snug">
+        <p id="stamp-method" class="text-xs text-emerald-700 leading-snug">
           Sello activado. Puedes continuar tu ruta.
         </p>
 
@@ -156,6 +175,28 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
   const boxSuccess = container.querySelector("#box-success");
   const boxCromo = container.querySelector("#box-cromo");
   const inputCode = container.querySelector("#input-code-val");
+  const camStatus = container.querySelector("#cam-status");
+  const camError = container.querySelector("#cam-error");
+  const camErrorMsg = container.querySelector("#cam-error-msg");
+  const camHint = container.querySelector("#cam-hint");
+  const stampMethod = container.querySelector("#stamp-method");
+
+  // Estado visible del visor: 'loading' | 'ok' | 'error'
+  // La pestaña NUNCA cambia sola: si la cámara falla, el usuario elige usar el código manual.
+  function setCamStatus(state, msg) {
+    if (camStatus) camStatus.classList.toggle("hidden", state !== "loading");
+    if (camError) camError.classList.toggle("hidden", state !== "error");
+    if (camHint) {
+      camHint.classList.toggle("hidden", state !== "ok");
+      if (state === "ok") {
+        camHint.innerHTML = `Cámara <b class="text-emerald-500">activa</b> · apuntá al QR ${
+          isCromo ? "del cromo escondido" : "institucional de la estación"
+        } y mantenlo dentro del recuadro.`;
+      }
+    }
+    if (msg && camErrorMsg) camErrorMsg.textContent = msg;
+    if (window.lucide) window.lucide.createIcons();
+  }
 
   function activateTab(which) {
     const camActive = which === "cam";
@@ -176,9 +217,10 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
 
   async function startScanner() {
     if (scanner) return;
+    setCamStatus("loading");
     if (!window.Html5Qrcode) {
-      activateTab("code");
-      app.showToast("Cámara no disponible. Usa el código manual (Plan B).");
+      scanner = null;
+      setCamStatus("error", "El lector de QR no está disponible en este navegador. Usá el código manual.");
       return;
     }
     try {
@@ -189,13 +231,21 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
         (decodedText) => onScanSuccess(decodedText),
         () => {} // errores de parseo por frame: se ignoran
       );
+      setCamStatus("ok");
     } catch (err) {
       console.warn("No se pudo iniciar la cámara:", err);
       scanner = null;
-      activateTab("code");
-      app.showToast("Sin acceso a la cámara. Ingresa el código manual.");
+      // La pestaña NO cambia sola: se muestra el motivo y el usuario elige.
+      setCamStatus("error", "Sin acceso a la cámara. Revisá el permiso del navegador o usá el código manual.");
     }
   }
+
+  // Cambio explícito a la pestaña manual (lo pide el usuario, nunca automático)
+  container.querySelector("#btn-use-manual").addEventListener("click", () => {
+    stopScanner();
+    activateTab("code");
+    inputCode.focus();
+  });
 
   async function stopScanner() {
     if (!scanner) return;
@@ -214,7 +264,13 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
   const standByCode = (val) => stands.find(s => s.code.toUpperCase() === val);
   const standByCromoCode = (val) => stands.find(s => s.cromo && s.cromo.code.toUpperCase() === val);
 
-  function showError(msg) {
+  function showError(msg, fromCamera = false) {
+    if (fromCamera) {
+      // QR incorrecto escaneado con la cámara: no se toca la pestaña ni se congela el visor.
+      // El escáner sigue activo para que el visitante reintente al instante.
+      app.showToast(msg + " · seguí apuntando para reintentar");
+      return;
+    }
     stopScanner();
     inputCode.classList.add("animate-shake", "border-rose-500");
     app.showToast(msg);
@@ -224,6 +280,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
   function handleCode(rawVal, metodo = "manual") {
     const val = String(rawVal || "").trim().toUpperCase();
     if (!val) return;
+    const fromCamera = metodo === "qr";
 
     if (isCromo) {
       const foundCromo = standByCromoCode(val);
@@ -233,10 +290,10 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
         return;
       }
       if (standByCode(val)) {
-        showError("Ese QR es de validación de stand, no del cromo. Mirá la pista y buscá la pegatina.");
+        showError("Ese QR es de validación de stand, no del cromo. Mirá la pista y buscá la pegatina.", fromCamera);
         return;
       }
-      showError(`Código de cromo no válido. Prueba con ${targetCode}`);
+      showError(`Código de cromo no válido. Prueba con ${targetCode}`, fromCamera);
       return;
     }
 
@@ -247,25 +304,45 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
       return;
     }
     if (standByCromoCode(val)) {
-      showError('Parece un QR de cromo secreto. Volvé a la estación y usá "Buscar el cromo".');
+      showError('Parece un QR de cromo secreto. Volvé a la estación y usá "Buscar el cromo".', fromCamera);
       return;
     }
-    showError("Código no válido. Prueba con " + targetCode);
+    showError("Código no válido. Prueba con " + targetCode, fromCamera);
   }
 
   // ---- Lógica de sello y valoración ----
   function completeStamp(stand, metodo = "manual") {
+    const already = app.isStandCompleted(stand.id);
+    const prev = app.state.stamps[stand.id]?.metodoIngreso; // leer ANTES del unlock (lo muta)
     app.unlockStamp(stand.id, metodo);
     boxSuccess.classList.remove("hidden");
-    app.showToast(`Sello obtenido: ${stand.name}`);
+
+    const via = metodo === "qr" ? "cámara QR" : "código manual";
+    const methodEl = container.querySelector("#stamp-method");
+    if (methodEl) {
+      if (!already) {
+        methodEl.textContent = `Sello registrado por ${via}. Puedes continuar tu ruta.`;
+      } else if (metodo === "qr" && prev === "qr") {
+        methodEl.textContent = "Ya estaba sellado por cámara QR. Puedes continuar tu ruta.";
+      } else if (metodo === "qr" && prev === "manual") {
+        methodEl.textContent = "Método de registro actualizado: ahora figura por cámara QR.";
+      } else {
+        methodEl.textContent = `Ya estaba sellado por ${via}. Puedes continuar tu ruta.`;
+      }
+    }
+    app.showToast(`Sello obtenido: ${stand.name} · ${via}`);
     if (window.lucide) window.lucide.createIcons();
   }
 
   // ---- Lógica del cromo secreto (misión secreta) ----
   function completeCromo(stand, metodo = "manual") {
+    const already = app.isChromeFound(stand.id);
     app.unlockChrome(stand.id, metodo);
     boxCromo.classList.remove("hidden");
-    app.showToast(`¡Cromo encontrado: ${stand.cromo.name}!`);
+    const via = metodo === "qr" ? "cámara QR" : "código manual";
+    app.showToast(already
+      ? `Cromo ya registrado · método: ${via}`
+      : `¡Cromo encontrado: ${stand.cromo.name}! · por ${via}`);
     if (window.lucide) window.lucide.createIcons();
   }
 
@@ -327,8 +404,22 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
   const prevRating = app.state.stamps[currentStand.id]?.valoracion;
   if (prevRating) paintStars(prevRating);
 
-  // Arranque: solicitar cámara al abrir la vista
+  // Arranque: la cámara SIEMPRE es la primera opción (nunca cae sola a "Código")
+  setCamStatus("loading");
+
+  // Si el sello/cromo ya existía, dejar claro de qué método quedó registrado
+  if (!isCromo && app.isStandCompleted(currentStand.id)) {
+    const prev = app.state.stamps[currentStand.id]?.metodoIngreso;
+    const methodEl = container.querySelector("#stamp-method");
+    if (methodEl) {
+      methodEl.textContent = prev === "qr"
+        ? "Sellado por cámara QR. Puedes continuar tu ruta."
+        : "Sellado por código manual. Puedes continuar tu ruta.";
+    }
+  }
+
   if (window.Html5Qrcode) startScanner();
+  else setCamStatus("error", "El lector de QR no está disponible en este navegador. Usá el código manual.");
 
   return container;
 }
