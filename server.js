@@ -1,5 +1,8 @@
 // Servidor HTTP estático local sin dependencias (Node.js >= 18)
 // Uso: node server.js  →  http://localhost:3000
+//
+// IMPORTANTE: soporta Range requests (206 Partial Content). Sin eso,
+// Safari/iOS NO reproduce video y Chrome tampoco puede hacer streaming.
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -53,15 +56,78 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
+  fs.stat(filePath, (statErr, stat) => {
+    if (statErr || !stat.isFile()) {
       res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
       res.end("<h1>404 Not Found</h1>");
       return;
     }
-    const ext = path.extname(filePath).toLowerCase();
-    res.writeHead(200, { "Content-Type": MIME[ext] || "application/octet-stream" });
-    res.end(data);
+
+    const contentType = MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream";
+
+    // ---- HEAD: sólo las cabeceras ----
+    if (req.method === "HEAD") {
+      res.writeHead(200, {
+        "Content-Type": contentType,
+        "Accept-Ranges": "bytes",
+        "Content-Length": stat.size,
+      });
+      res.end();
+      return;
+    }
+
+    // ---- Range request (obligatorio para video) ----
+    const range = req.headers.range;
+    if (range) {
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+      let start, end;
+
+      if (!match) {
+        // Sintaxis no soportada: respondemos 416 según la RFC
+        res.writeHead(416, { "Content-Range": `bytes */${stat.size}` });
+        res.end();
+        return;
+      }
+
+      if (match[1] === "") {
+        // Sufijo: "bytes=-500" → los últimos 500 bytes
+        const suffix = parseInt(match[2], 10);
+        if (!suffix) {
+          res.writeHead(416, { "Content-Range": `bytes */${stat.size}` });
+          res.end();
+          return;
+        }
+        start = Math.max(stat.size - suffix, 0);
+        end = stat.size - 1;
+      } else {
+        start = parseInt(match[1], 10);
+        end = match[2] === "" ? stat.size - 1 : parseInt(match[2], 10);
+      }
+
+      if (isNaN(start) || isNaN(end) || start > end || start >= stat.size) {
+        res.writeHead(416, { "Content-Range": `bytes */${stat.size}` });
+        res.end();
+        return;
+      }
+      end = Math.min(end, stat.size - 1);
+
+      res.writeHead(206, {
+        "Content-Type": contentType,
+        "Accept-Ranges": "bytes",
+        "Content-Range": `bytes ${start}-${end}/${stat.size}`,
+        "Content-Length": end - start + 1,
+      });
+      fs.createReadStream(filePath, { start, end }).pipe(res);
+      return;
+    }
+
+    // ---- Respuesta completa ----
+    res.writeHead(200, {
+      "Content-Type": contentType,
+      "Accept-Ranges": "bytes",
+      "Content-Length": stat.size,
+    });
+    fs.createReadStream(filePath).pipe(res);
   });
 });
 
