@@ -65,10 +65,19 @@ const server = http.createServer((req, res) => {
 
     const contentType = MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream";
 
+    // Caché para estáticos: evita volver a bajar el video/imágenes en cada
+    // recarga (el splash usa preload="auto", así que si no hay caché el
+    // navegador pide el .mp4 aunque el splash ya no se vaya a mostrar).
+    const isHtml = filePath.endsWith(".html");
+    const cacheControl = isHtml
+      ? "no-cache"
+      : "public, max-age=3600";
+
     // ---- HEAD: sólo las cabeceras ----
     if (req.method === "HEAD") {
       res.writeHead(200, {
         "Content-Type": contentType,
+        "Cache-Control": cacheControl,
         "Accept-Ranges": "bytes",
         "Content-Length": stat.size,
       });
@@ -113,6 +122,7 @@ const server = http.createServer((req, res) => {
 
       res.writeHead(206, {
         "Content-Type": contentType,
+        "Cache-Control": cacheControl,
         "Accept-Ranges": "bytes",
         "Content-Range": `bytes ${start}-${end}/${stat.size}`,
         "Content-Length": end - start + 1,
@@ -124,6 +134,7 @@ const server = http.createServer((req, res) => {
     // ---- Respuesta completa ----
     res.writeHead(200, {
       "Content-Type": contentType,
+      "Cache-Control": cacheControl,
       "Accept-Ranges": "bytes",
       "Content-Length": stat.size,
     });

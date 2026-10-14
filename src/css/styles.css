@@ -70,7 +70,23 @@ select, input, button, textarea { font-family: inherit; }
 .splash-screen.splash-out { opacity: 0; }
 .splash-screen.splash-gone { display: none; }
 
+/* Fondo desenfocado (la propia escena, borroda y un poco más oscura).
+   Rellena el resto de la pantalla cuando el video 9:16 no lo cubre,
+   en vez de dejar franjas de color plano. */
+.splash-bg {
+  position: absolute;
+  inset: 0;
+  /* Ruta relativa al CSS (styles.css vive en /src/css/, por eso ../../) */
+  background-image: url("../../assets/splash-poster.jpg");
+  background-size: cover;
+  background-position: center;
+  filter: blur(26px) saturate(1.15) brightness(0.75);
+  transform: scale(1.15); /* tapa el borde que deja el blur */
+}
+
 .splash-video {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: contain;
