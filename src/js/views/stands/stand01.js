@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Stand 01: Robótica Industrial & Brazos Articulados
+ * INNOVARTECH - Stand 01: Robótica Industrial & Brazos Articulados
  * Los retos/trivias de esta estación se gestionan externamente (Google Forms).
  */
 

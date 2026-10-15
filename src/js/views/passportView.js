@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Vista de Pasaporte / Colección Personal (vista-pasaporte.png)
+ * INNOVARTECH - Vista de Pasaporte / Colección Personal (vista-pasaporte.png)
  * Muestra el rango actual, desafíos resueltos, avance de la ruta y la grilla con los 5 stands.
  */
 

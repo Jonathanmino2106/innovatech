@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Tailwind CSS Config
+ * INNOVARTECH - Tailwind CSS Config
  * Config movida desde el <script> inline de index.html (Tailwind CDN)
  * a build estático con Tailwind CLI. Mismos valores, cero JS en runtime.
  *

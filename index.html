@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#0f2742" />
-  <title>Innovatech | Feria Tecnológica</title>
+  <title>Innovartech | Feria Tecnológica</title>
 
   <!-- Favicon: usa el logo corporativo (evita el 404 de /favicon.ico que pide el navegador) -->
-  <link rel="icon" type="image/png" href="./assets/innovatech.png" />
+  <link rel="icon" type="image/png" href="./assets/innovartech.png" />
 
-  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <!-- Google Fonts: Chakra Petch (título splash) & Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,600;1,700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -32,23 +32,35 @@
 <body class="h-full w-full bg-[#f8fafc] font-sans text-slate-800 flex flex-col justify-start items-center overflow-x-hidden selection:bg-cyan-500 selection:text-white">
 
   <!-- ============================================================
-       SPLASH SCREEN (video de carga)
+       SPLASH SCREEN (animación de carga en CSS puro)
        Va estático en el HTML y NO inyectado por JS: así aparece al
        instante, antes de que se resuelvan los módulos ES.
        La lógica de cierre vive en el <script> de abajo del todo.
        ============================================================ -->
   <div id="splash-screen" class="splash-screen">
-    <!-- Fondo desenfocado: rellena las franjas que el video 9:16 no cubre
-         (celulares altos y pantallas de PC) sin recortar el contenido. -->
-    <div class="splash-bg" aria-hidden="true"></div>
-    <video
-      id="splash-video"
-      class="splash-video"
-      src="./assets/splash-screen.mp4"
-      poster="./assets/splash-poster.jpg"
-      autoplay muted playsinline preload="auto"
-      aria-hidden="true"
-    ></video>
+    <!-- Aureolas flotantes (luces cian/magenta/violeta del video) -->
+    <div class="splash-aurora splash-aurora--cyan" aria-hidden="true"></div>
+    <div class="splash-aurora splash-aurora--magenta" aria-hidden="true"></div>
+    <div class="splash-aurora splash-aurora--violet" aria-hidden="true"></div>
+
+    <div class="splash-content">
+      <h1 class="splash-title">INNOVARTECH</h1>
+      <div class="splash-sub-rule" aria-hidden="true"></div>
+      <p class="splash-subtitle">FERIA DE ROBÓTICA</p>
+
+      <p class="splash-tagline">
+        Conectando ideas,<br />
+        construyendo el <span class="splash-tagline-accent">futuro.</span>
+      </p>
+
+      <div class="splash-loader">
+        <span class="splash-ring" aria-hidden="true"></span>
+        <span class="splash-loading-text">
+          CARGANDO<span class="splash-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span>
+        </span>
+      </div>
+    </div>
+
     <button id="splash-skip" class="splash-skip" type="button">Saltar</button>
   </div>
 
@@ -70,31 +82,20 @@
        ============================================================ -->
   <script>
     (function () {
-      var STORAGE_KEY = "innovatech_splash_v1";
-      var MAX_MS = 9000; // el video dura 7s: 2s de margen
+      var STORAGE_KEY = "innovartech_splash_v1";
+      var MAX_MS = 6000; // la animación CSS dura ~4s: 2s de margen
 
       var splash = document.getElementById("splash-screen");
-      var video = document.getElementById("splash-video");
       var skip = document.getElementById("splash-skip");
-      if (!splash || !video) return;
+      if (!splash) return;
 
       var closed = false;
-
-      // Soltar el buffer: si no, el navegador sigue bajando el video por detrás
-      function releaseVideo() {
-        try {
-          video.pause();
-          video.removeAttribute("src");
-          video.load();
-        } catch (e) { /* nada */ }
-      }
 
       function hideSplash() {
         if (closed) return;
         closed = true;
         try { sessionStorage.setItem(STORAGE_KEY, "1"); } catch (e) { /* modo privado */ }
         splash.classList.add("splash-out");
-        releaseVideo();
         setTimeout(function () { splash.classList.add("splash-gone"); }, 480);
       }
 
@@ -105,23 +106,13 @@
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       if (alreadySeen || reducedMotion) {
-        closed = true;
-        releaseVideo();
         splash.parentNode.removeChild(splash);
         return;
       }
 
       // Cierres garantizados
       skip.addEventListener("click", hideSplash);
-      video.addEventListener("ended", hideSplash);
-      video.addEventListener("error", hideSplash);
       setTimeout(hideSplash, MAX_MS);
-
-      // Autoplay puede ser rechazado por el navegador: no nos quedamos colgados
-      var playing = video.play();
-      if (playing && typeof playing.catch === "function") {
-        playing.catch(function () { /* el timeout se encarga */ });
-      }
     })();
   </script>
 

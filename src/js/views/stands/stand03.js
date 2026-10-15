@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Stand 03: Robots Móviles & Vehículos Autónomos (AGV/AMR)
+ * INNOVARTECH - Stand 03: Robots Móviles & Vehículos Autónomos (AGV/AMR)
  * Los retos/trivias de esta estación se gestionan externamente (Google Forms).
  */
 

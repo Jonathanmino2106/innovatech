@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Plantilla Común de Vista de Estación (Stand)
+ * INNOVARTECH - Plantilla Común de Vista de Estación (Stand)
  * Renderiza la tarjeta hero + tarjeta de validación para cualquier stand.
  * NOTA: la trivia/retos NO se manejan acá (se externalizan a Google Forms).
  */

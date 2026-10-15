@@ -1,4 +1,4 @@
-/* INNOVATECH - PASAPORTE.26 Design System */
+/* INNOVARTECH - PASAPORTE.26 Design System */
 
 /* ============================================================
    LEGIBILIDAD EN FERIA: aumento global de tamaño de letra
@@ -51,18 +51,26 @@ select, input, button, textarea { font-family: inherit; }
 }
 
 /* ============================================================
-   SPLASH SCREEN (video de carga)
-   El video es vertical 9:16: con object-fit:contain se ve entero,
-   centrado sobre el azul corporativo, sin cortar el logo.
+   SPLASH SCREEN (animación de carga en CSS puro, sin video)
+   Réplica del póster corporativo: fondo azul-violeta profundo,
+   aureolas de luz flotantes, logotipo con barrido de brillo
+   (shimmer) sobre gradiente cian→magenta y anillo spinner.
+   Paleta del video: #0f2742 / #1a0f3c, cian #22d3ee,
+   magenta #e879f9 y violeta #8b5cf6.
    ============================================================ */
 .splash-screen {
   position: fixed;
   inset: 0;
   z-index: 100; /* por encima del navbar (z-40) y del toast (z-50) */
-  background: #0f2742;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Fondo profundo azul → violeta (como el video) */
+  background:
+    radial-gradient(120% 90% at 50% 8%, rgba(139, 92, 246, 0.22) 0%, transparent 55%),
+    radial-gradient(100% 80% at 50% 100%, rgba(34, 211, 238, 0.12) 0%, transparent 60%),
+    linear-gradient(165deg, #12203a 0%, #0f2742 42%, #1a0f3c 100%);
   transition: opacity 0.45s ease;
 }
 
@@ -70,26 +78,209 @@ select, input, button, textarea { font-family: inherit; }
 .splash-screen.splash-out { opacity: 0; }
 .splash-screen.splash-gone { display: none; }
 
-/* Fondo desenfocado (la propia escena, borroda y un poco más oscura).
-   Rellena el resto de la pantalla cuando el video 9:16 no lo cubre,
-   en vez de dejar franjas de color plano. */
-.splash-bg {
+/* Aureolas de luz flotantes: círculos desenfocados que recrean
+   las luces de neón del video sin costo de decodificación. */
+.splash-aurora {
   position: absolute;
-  inset: 0;
-  /* Ruta relativa al CSS (styles.css vive en /src/css/, por eso ../../) */
-  background-image: url("../../assets/splash-poster.jpg");
-  background-size: cover;
-  background-position: center;
-  filter: blur(26px) saturate(1.15) brightness(0.75);
-  transform: scale(1.15); /* tapa el borde que deja el blur */
+  border-radius: 9999px;
+  filter: blur(64px);
+  pointer-events: none;
+  will-change: transform;
+}
+.splash-aurora--cyan {
+  width: 46vmax;
+  height: 46vmax;
+  top: -12%;
+  left: -14%;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.32) 0%, transparent 68%);
+  animation: auroraDriftA 16s ease-in-out infinite;
+}
+.splash-aurora--magenta {
+  width: 42vmax;
+  height: 42vmax;
+  bottom: -16%;
+  right: -12%;
+  background: radial-gradient(circle, rgba(232, 121, 249, 0.28) 0%, transparent 68%);
+  animation: auroraDriftB 18s ease-in-out infinite;
+}
+.splash-aurora--violet {
+  width: 34vmax;
+  height: 34vmax;
+  top: 42%;
+  left: 58%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.26) 0%, transparent 70%);
+  animation: auroraDriftC 14s ease-in-out infinite;
 }
 
-.splash-video {
+@keyframes auroraDriftA {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(8%, 10%, 0) scale(1.12); }
+}
+@keyframes auroraDriftB {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(-9%, -8%, 0) scale(1.08); }
+}
+@keyframes auroraDriftC {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.7; }
+  50%      { transform: translate3d(-12%, 6%, 0) scale(1.16); opacity: 1; }
+}
+
+/* Contenido central: entrada suave de bloque */
+.splash-content {
   position: relative;
   z-index: 1;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  max-width: 40rem;
+  padding: 0 1.5rem;
+  text-align: center;
+  animation: splashRise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes splashRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Logotipo: fuente display ancha en itálica con gradiente cian→magenta
+   y barrido de brillo (shimmer) recorriendo las letras. */
+.splash-title {
+  margin: 0;
+  font-family: "Chakra Petch", "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  font-size: clamp(2.1rem, 10.5vw, 3.6rem);
+  /* Color de respaldo por si background-clip:text no estuviera soportado:
+     nunca debe verse gris/apagado. */
+  color: #e8f6ff;
+  background: linear-gradient(
+    100deg,
+    #ffffff 0%,
+    #22d3ee 22%,
+    #38bdf8 38%,
+    #e879f9 60%,
+    #a78bfa 78%,
+    #22d3ee 100%
+  );
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.35))
+          drop-shadow(0 0 26px rgba(232, 121, 249, 0.28));
+  animation: titleShimmer 4.5s linear infinite,
+             titleIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes titleShimmer {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 240% 50%; }
+}
+@keyframes titleIn {
+  from { opacity: 0; transform: scale(0.94); letter-spacing: 0.28em; }
+  to   { opacity: 1; transform: scale(1); letter-spacing: 0.08em; }
+}
+
+/* Filete divisorio bajo el logotipo (como los trazos del póster) */
+.splash-sub-rule {
+  width: min(100%, 20rem);
+  height: 1px;
+  margin: 0.9rem auto 0.75rem;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(34, 211, 238, 0.65) 22%,
+    rgba(232, 121, 249, 0.65) 78%,
+    transparent 100%
+  );
+  animation: ruleFade 0.9s ease 0.25s both;
+}
+@keyframes ruleFade {
+  from { opacity: 0; transform: scaleX(0.4); }
+  to   { opacity: 1; transform: scaleX(1); }
+}
+
+/* Subtítulo monoespaciado con letter-spacing amplio (fiel al póster) */
+.splash-subtitle {
+  margin: 0;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 700;
+  font-size: clamp(0.62rem, 3vw, 0.78rem);
+  letter-spacing: 0.42em;
+  text-indent: 0.42em; /* compensa el letter-spacing final */
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 0 12px rgba(34, 211, 238, 0.35);
+  animation: fadeUp 0.8s ease 0.35s both;
+}
+
+/* Lema de la feria */
+.splash-tagline {
+  margin: 2.4rem 0 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(0.95rem, 4.2vw, 1.15rem);
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+  animation: fadeUp 0.8s ease 0.55s both;
+}
+.splash-tagline-accent {
+  color: #22d3ee;
+  text-shadow: 0 0 14px rgba(34, 211, 238, 0.5);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Cargador: anillo giratorio con gradiente cian→magenta + texto */
+.splash-loader {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  animation: fadeUp 0.8s ease 0.75s both;
+}
+.splash-ring {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 9999px;
+  /* Solo dos bordes pintados = arco que gira como en el póster */
+  border: 3px solid transparent;
+  border-top-color: #22d3ee;
+  border-right-color: #e879f9;
+  animation: ringSpin 0.95s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.45))
+          drop-shadow(0 0 12px rgba(232, 121, 249, 0.35));
+}
+@keyframes ringSpin {
+  to { transform: rotate(360deg); }
+}
+
+.splash-loading-text {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+.splash-dots i {
+  font-style: normal;
+  animation: dotBlink 1.2s ease-in-out infinite;
+}
+.splash-dots i:nth-child(2) { animation-delay: 0.2s; }
+.splash-dots i:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotBlink {
+  0%, 60%, 100% { opacity: 0.15; }
+  30%           { opacity: 1; }
 }
 
 /* Botón "Saltar": discreto y con área táctil cómoda */
@@ -97,6 +288,7 @@ select, input, button, textarea { font-family: inherit; }
   position: absolute;
   right: 1rem;
   bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  z-index: 2;
   min-height: 2.75rem;
   padding: 0 1.15rem;
   border-radius: 9999px;

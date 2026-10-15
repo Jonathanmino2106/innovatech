@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Build Script de Variables de Entorno
+ * INNOVARTECH - Build Script de Variables de Entorno
  * Genera src/js/config.js a partir de .env (local) o process.env (Vercel).
  * Así las credenciales de Supabase NUNCA quedan hardcodeadas en el código fuente.
  *

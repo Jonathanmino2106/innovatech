@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Stand 05: Exoesqueletos & Robótica Médica
+ * INNOVARTECH - Stand 05: Exoesqueletos & Robótica Médica
  * Los retos/trivias de esta estación se gestionan externamente (Google Forms).
  */
 

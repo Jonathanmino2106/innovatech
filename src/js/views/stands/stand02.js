@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Stand 02: Drones Autónomos & Visión Espacial
+ * INNOVARTECH - Stand 02: Drones Autónomos & Visión Espacial
  * Los retos/trivias de esta estación se gestionan externamente (Google Forms).
  */
 

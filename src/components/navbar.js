@@ -1,6 +1,6 @@
 /**
- * INNOVATECH - Componente Header Superior y Bottom Navbar
- * Reemplaza el texto "PASAPORTE.26" por la imagen del logo corporativo `./assets/innovatech.png`
+ * INNOVARTECH - Componente Header Superior y Bottom Navbar
+ * Reemplaza el texto "PASAPORTE.26" por la imagen del logo corporativo `./assets/innovartech.png`
  * que funciona además como botón de inicio (Home).
  */
 
@@ -12,7 +12,7 @@ export function createHeader(app) {
   const initial = user && user.nickname ? user.nickname[0].toUpperCase() : "V";
 
   header.innerHTML = `
-    <!-- Logotipo Corporativo INNOVATECH & Avatar -->
+    <!-- Logotipo Corporativo INNOVARTECH & Avatar -->
     <div class="flex items-center gap-3">
       ${user ? `
         <div class="w-8 h-8 rounded-full bg-cyan-950 text-cyan-300 font-bold text-xs flex items-center justify-center border border-cyan-800">
@@ -24,10 +24,9 @@ export function createHeader(app) {
       <!-- Logo Corporativo como Botón Home -->
       <button id="nav-logo-btn" class="flex items-center gap-2 focus:outline-none group active:scale-95 transition-transform" title="Volver al Inicio">
         <img 
-          src="./assets/innovatech.png" 
-          alt="INNOVATECH" 
+          src="./assets/innovartech.png" 
+          alt="INNOVARTECH" 
           class="h-16 md:h-24 w-auto object-contain drop-shadow-sm" 
-          onerror="this.onerror=null; this.src='./assets/innova.png';"
         />
       </button>
     </div>

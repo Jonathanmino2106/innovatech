@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Generador de QR de la feria (HERRAMIENTA DEL ORGANIZADOR)
+ * INNOVARTECH - Generador de QR de la feria (HERRAMIENTA DEL ORGANIZADOR)
  *
  * Uso:
  *   npm run qr:stands   → QR de validación de stands (STAND01..STAND05)
@@ -121,7 +121,7 @@ function buildSheet(setName, items) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${set.title} · INNOVATECH</title>
+  <title>${set.title} · INNOVARTECH</title>
   <!-- ARCHIVO GENERADO POR "npm run qr:${setName}" - NO EDITAR A MANO -->
   <style>
     * { box-sizing: border-box; }

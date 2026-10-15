@@ -1,8 +1,10 @@
 // Servidor HTTP estático local sin dependencias (Node.js >= 18)
 // Uso: node server.js  →  http://localhost:3000
 //
-// IMPORTANTE: soporta Range requests (206 Partial Content). Sin eso,
-// Safari/iOS NO reproduce video y Chrome tampoco puede hacer streaming.
+// IMPORTANTE: soporta Range requests (206 Partial Content) para servir
+// binarios grandes por partes. Caché "no-cache" + revalidado por
+// Last-Modified (304), así los cambios de JS/CSS/ imágenes se ven al
+// instante sin re-descargar lo que no cambió.
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -47,7 +49,7 @@ const server = http.createServer((req, res) => {
   // Fallback de favicon: si piden /favicon.ico y no existe uno en la raíz,
   // servimos el logo corporativo en PNG (evita el 404 en la consola del navegador).
   if (urlPath === "/favicon.ico" && !fs.existsSync(filePath)) {
-    filePath = path.join(ROOT, "assets", "innovatech.png");
+    filePath = path.join(ROOT, "assets", "innovartech.png");
   }
 
   // Bloquear accesos fuera del directorio raíz
@@ -65,19 +67,35 @@ const server = http.createServer((req, res) => {
 
     const contentType = MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream";
 
-    // Caché para estáticos: evita volver a bajar el video/imágenes en cada
-    // recarga (el splash usa preload="auto", así que si no hay caché el
-    // navegador pide el .mp4 aunque el splash ya no se vaya a mostrar).
-    const isHtml = filePath.endsWith(".html");
-    const cacheControl = isHtml
-      ? "no-cache"
-      : "public, max-age=3600";
+    // Caché: "no-cache" NO significa "no guardes", significa "revalida siempre".
+    // Sin nombres con hash en los archivos, un max-age largo hacía que el
+    // navegador sirviera JS/CSS/ imágenes viejos tras un cambio (navbar con el
+    // logo antiguo, splash sin estilos). Con el revalidado por Last-Modified
+    // de abajo, el navegador sólo baja el cuerpo si algo cambió (304 si no).
+    const cacheControl = "no-cache";
+    const lastModified = stat.mtime.toUTCString();
+
+    // Revalidación condicional: si el cliente ya tiene esta versión, 304 sin cuerpo.
+    const ifModifiedSince = req.headers["if-modified-since"];
+    if (ifModifiedSince) {
+      const clientMs = Date.parse(ifModifiedSince);
+      // Compara en segundos (formato HTTP) para no fallar por milisegundos
+      if (!isNaN(clientMs) && Math.floor(stat.mtimeMs / 1000) * 1000 <= clientMs) {
+        res.writeHead(304, {
+          "Cache-Control": cacheControl,
+          "Last-Modified": lastModified,
+        });
+        res.end();
+        return;
+      }
+    }
 
     // ---- HEAD: sólo las cabeceras ----
     if (req.method === "HEAD") {
       res.writeHead(200, {
         "Content-Type": contentType,
         "Cache-Control": cacheControl,
+        "Last-Modified": lastModified,
         "Accept-Ranges": "bytes",
         "Content-Length": stat.size,
       });
@@ -123,6 +141,7 @@ const server = http.createServer((req, res) => {
       res.writeHead(206, {
         "Content-Type": contentType,
         "Cache-Control": cacheControl,
+        "Last-Modified": lastModified,
         "Accept-Ranges": "bytes",
         "Content-Range": `bytes ${start}-${end}/${stat.size}`,
         "Content-Length": end - start + 1,
@@ -135,6 +154,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, {
       "Content-Type": contentType,
       "Cache-Control": cacheControl,
+      "Last-Modified": lastModified,
       "Accept-Ranges": "bytes",
       "Content-Length": stat.size,
     });

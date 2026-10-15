@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Vista de Creación/Recuperación de Pasaporte (crea-pasaporte)
+ * INNOVARTECH - Vista de Creación/Recuperación de Pasaporte (crea-pasaporte)
  * Pestañas formales: "Crear mi pasaporte" (nickname + perfil de visitante) y
  * "Ya tengo mi pasaporte" (recuperación por código slug-del-nickname-0001, sin contraseñas).
  * Registra el usuario en Supabase (tabla usuarios) y en localStorage antes de habilitar home1.
@@ -19,7 +19,7 @@ export function createCreaPasaporteView(app) {
       // Pantalla con pestañas: crear-pasaporte.png / recuperar sesión
       container.innerHTML = `
         <div class="flex items-center justify-between text-xs text-slate-500">
-          <span class="font-mono uppercase font-bold text-[11px] text-cyan-600">INNOVATECH 2026</span>
+          <span class="font-mono uppercase font-bold text-[11px] text-cyan-600">INNOVARTECH 2026</span>
           <span class="font-mono uppercase font-bold text-[11px] text-slate-400">PASO 01 / 03</span>
         </div>
 

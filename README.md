@@ -1,13 +1,13 @@
-# INNOVATECH - Arquitectura Modular ES6 Mobile-First
+# INNOVARTECH - Arquitectura Modular ES6 Mobile-First
 
-Aplicación web SPA ligera desarrollada para la feria de robótica INNOVATECH utilizando **HTML5**, **Tailwind CSS (CLI con build estático)** y **JavaScript Vanilla (Módulos ES6)** con aislamiento total por componente y stand.
+Aplicación web SPA ligera desarrollada para la feria de robótica INNOVARTECH utilizando **HTML5**, **Tailwind CSS (CLI con build estático)** y **JavaScript Vanilla (Módulos ES6)** con aislamiento total por componente y stand.
 
 ---
 
 ## 📂 Estructura del Proyecto
 
 ```text
-innovatech\
+innovartech\
 ├── index.html                     # Contenedor raíz con <div id="app"> y script type="module"
 ├── build.js                       # Genera src/js/config.js desde .env / variables de Vercel
 ├── tailwind.config.js             # Config de Tailwind (colores theme.* y fonts), antes era inline en index.html

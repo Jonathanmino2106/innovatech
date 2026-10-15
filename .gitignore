@@ -11,7 +11,3 @@ Thumbs.db
 
 # CSS generado por Tailwind CLI (se regenera en cada build/deploy)
 src/css/tailwind.generated.css
-
-# Video original del splash (10 MB, con watermark de Pippit AI).
-# En el repo vive solo el optimizado assets/splash-screen.mp4 (1,88 MB).
-assets/splash-screen.original.mp4

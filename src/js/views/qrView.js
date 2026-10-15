@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Vista de Escaneo QR (cámara real) y Plan B Código Manual
+ * INNOVARTECH - Vista de Escaneo QR (cámara real) y Plan B Código Manual
  * - Cámara: decodificador QR real con html5-qrcode (facingMode trasera).
  * - Plan B: pestaña con input alfanumérico para fallas de cámara/permisos/luz.
  * - Dos modos:

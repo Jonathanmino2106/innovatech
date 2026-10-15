@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Vista de Rangos y Logros (vista-rangos.png)
+ * INNOVARTECH - Vista de Rangos y Logros (vista-rangos.png)
  * Muestra el listado de rangos alcanzables y logros especiales desbloqueables.
  * Los rangos se importan del módulo único de verdad: src/js/ranks.js
  */

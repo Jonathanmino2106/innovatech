@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Enrutador Central y Orquestador de Estado con Supabase
+ * INNOVARTECH - Enrutador Central y Orquestador de Estado con Supabase
  * - Login Obligatorio: Si no hay usuario en localStorage, fuerza la vista 'crea-pasaporte'.
  * - Persistencia dual en Supabase ('usuarios' y 'visitas_estaciones') y localStorage.
  * - Navegación fluida por 'home1', 'crea-pasaporte', 'map', 'qr', 'passport', 'ranks' y los 5 stands.
@@ -22,7 +22,7 @@ import { STAND_03_INFO, renderStand03 } from './views/stands/stand03.js';
 import { STAND_04_INFO, renderStand04 } from './views/stands/stand04.js';
 import { STAND_05_INFO, renderStand05 } from './views/stands/stand05.js';
 
-const STORAGE_KEY = "innovatech_session_v2";
+const STORAGE_KEY = "innovartech_session_v2";
 
 class AppRouter {
   constructor() {

@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Vista 'home1' / Panel de Control Principal del Visitante
+ * INNOVARTECH - Vista 'home1' / Panel de Control Principal del Visitante
  * Basada exactamente en panel-recorrido.png (Tarjeta hero de progreso, siguiente estación y tablero).
  */
 

@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Módulo Único de Verdad de Rangos (Gamificación)
+ * INNOVARTECH - Módulo Único de Verdad de Rangos (Gamificación)
  * Toda la app (home, pasaporte, rangos y lógica de sello) debe calcular
  * el rango usando estas funciones para evitar inconsistencias.
  *

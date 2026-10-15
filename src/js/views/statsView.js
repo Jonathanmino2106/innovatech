@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Vista de Estadísticas Analíticas (organizadores / jurados)
+ * INNOVARTECH - Vista de Estadísticas Analíticas (organizadores / jurados)
  * Gráfico de TORTA: visitas acumuladas por stand.
  * Gráfico de DONA: uso de escáner QR vs código manual (Plan B).
  * Tabla de clasificación: visitas totales + valoración promedio (estrellas).

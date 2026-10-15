@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Vista de Mapa Demostrativo (vista-mapa.png)
+ * INNOVARTECH - Vista de Mapa Demostrativo (vista-mapa.png)
  * Plano con pasillos redondeados en cruz, los 5 pines interactivos y la tarjeta lateral del stand.
  */
 

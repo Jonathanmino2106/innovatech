@@ -1,5 +1,5 @@
 /**
- * INNOVATECH - Stand 04: Robots Humanoides & Locomoción Bípeda
+ * INNOVARTECH - Stand 04: Robots Humanoides & Locomoción Bípeda
  * Los retos/trivias de esta estación se gestionan externamente (Google Forms).
  */
 
