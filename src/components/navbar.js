@@ -90,9 +90,11 @@ export function createHeader(app) {
     </div>
   `;
 
-  // El logo corporativo funciona como botón de Home
+  // El logo corporativo funciona como botón de Inicio (portada de la feria).
+  // Es el ÚNICO cambio sobre el navbar: los items "Inicio", "Pasaporte", etc.
+  // conservan sus rutas originales (el botón "Inicio" abre el panel de recorrido).
   header.querySelector("#nav-logo-btn").addEventListener("click", () => {
-    app.navigate(user ? "home1" : "crea-pasaporte");
+    app.navigate(user ? "inicio" : "crea-pasaporte");
   });
 
   header.querySelectorAll("button[data-nav-route]").forEach(btn => {

@@ -29,7 +29,8 @@ innovartech\
 │       ├── supabaseClient.js      # Cliente Supabase (lee de config.js)
 │       └── views\
 │           ├── loginView.js       # Pestañas: crear pasaporte / recuperar por código
-│           ├── homeView.js        # Panel de control, barra 0-100%, rango y accesos rápidos
+│           ├── inicioView.js      # Portada de la feria: de qué trata, sus 5 ejes y galería del recorrido (lightbox)
+│           ├── recorridoView.js   # Panel de recorrido (antes homeView): barra 0-100%, rango y accesos rápidos
 │           ├── mapView.js         # Plano esquemático con los 5 pines interactivos
 │           ├── qrView.js          # Lector QR real por cámara + solapa Plan B (código manual)
 │           ├── passportView.js    # Colección de sellos y avance de la ruta

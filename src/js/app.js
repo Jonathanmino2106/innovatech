@@ -2,14 +2,15 @@
  * INNOVARTECH - Enrutador Central y Orquestador de Estado con Supabase
  * - Login Obligatorio: Si no hay usuario en localStorage, fuerza la vista 'crea-pasaporte'.
  * - Persistencia dual en Supabase ('usuarios' y 'visitas_estaciones') y localStorage.
- * - Navegación fluida por 'home1', 'crea-pasaporte', 'map', 'qr', 'passport', 'ranks' y los 5 stands.
+ * - Navegación fluida por 'inicio', 'recorrido', 'crea-pasaporte', 'map', 'qr', 'passport', 'ranks' y los 5 stands.
  */
 
 import { supabase } from './supabaseClient.js';
 import { getRankTitle } from './ranks.js';
 import { createHeader, createBottomNavbar } from '../components/navbar.js';
 import { createCreaPasaporteView } from './views/loginView.js';
-import { createHomeView } from './views/homeView.js';
+import { createInicioView } from './views/inicioView.js';
+import { createRecorridoView } from './views/recorridoView.js';
 import { createMapView } from './views/mapView.js';
 import { createQrView } from './views/qrView.js';
 import { createPassportView } from './views/passportView.js';
@@ -58,10 +59,10 @@ class AppRouter {
     // 2. Lógica de Autenticación Inicial Obligatoria:
     // Al ingresar por primera vez, el sistema NO asigna usuario por defecto.
     // Si no hay usuario guardado en localStorage, muestra 'crea-pasaporte'.
-    // Si ya existe, ingresa directo a 'home1' y sincroniza datos con Supabase.
+    // Si ya existe, ingresa directo a 'inicio' y sincroniza datos con Supabase.
     if (this.state.user && this.state.user.id) {
       await this.syncWithSupabase();
-      this.navigate("home1");
+      this.navigate("inicio");
     } else {
       this.state.user = null;
       this.state.stamps = {};
@@ -548,8 +549,12 @@ class AppRouter {
 
     if (this.currentRoute === "crea-pasaporte") {
       viewElement = createCreaPasaporteView(this);
-    } else if (this.currentRoute === "home1" || this.currentRoute === "home") {
-      viewElement = createHomeView(this);
+    } else if (this.currentRoute === "inicio") {
+      // Portada de la feria: de qué trata, a qué está dedicada y galería del recorrido
+      viewElement = createInicioView(this);
+    } else if (this.currentRoute === "recorrido" || this.currentRoute === "home1" || this.currentRoute === "home") {
+      // Panel de recorrido (la vista que antes era el inicio)
+      viewElement = createRecorridoView(this);
     } else if (this.currentRoute === "map") {
       viewElement = createMapView(this);
     } else if (this.currentRoute === "qr") {
@@ -563,7 +568,7 @@ class AppRouter {
     } else if (this.standsMap[this.currentRoute]) {
       viewElement = this.standsMap[this.currentRoute].render(this);
     } else {
-      viewElement = this.state.user ? createHomeView(this) : createCreaPasaporteView(this);
+      viewElement = this.state.user ? createInicioView(this) : createCreaPasaporteView(this);
     }
 
     // Clase común para el respiro inferior móvil (ver .app-view en styles.css)

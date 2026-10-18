@@ -1,11 +1,12 @@
 /**
- * INNOVARTECH - Vista 'home1' / Panel de Control Principal del Visitante
+ * INNOVARTECH - Vista 'recorrido' (alias 'home1' / 'home') / Panel de Control Principal del Visitante
  * Basada exactamente en panel-recorrido.png (Tarjeta hero de progreso, siguiente estación y tablero).
+ * Es la vista que antes era el "inicio"; el botón "Inicio" del navbar sigue abriendola.
  */
 
 import { getRankTitle } from '../ranks.js';
 
-export function createHomeView(app) {
+export function createRecorridoView(app) {
   const container = document.createElement("div");
   container.className = "w-full max-w-5xl px-4 py-6 md:py-8 space-y-6 pb-24 md:pb-12";
 
