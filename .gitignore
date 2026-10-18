@@ -11,3 +11,7 @@ Thumbs.db
 
 # CSS generado por Tailwind CLI (se regenera en cada build/deploy)
 src/css/tailwind.generated.css
+
+# Videos originales sin comprimir (respaldo local): los que se sirven
+# en assets/multimedia/*.mp4 son los reencoded con ffmpeg (crf 33)
+assets/multimedia/originals/
