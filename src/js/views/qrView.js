@@ -96,15 +96,12 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
           <input
             id="input-code-val"
             type="text"
-            placeholder="${targetCode}"
+            placeholder="Ingresá el código"
             maxlength="10"
             autocapitalize="characters"
             autocomplete="off"
             class="w-full min-h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-mono text-base font-bold uppercase text-slate-900 placeholder-slate-400 tracking-wider focus:outline-none focus:border-cyan-500 focus:bg-white transition-all"
           />
-          <p class="text-[11px] text-slate-500 mt-1.5">
-            Prueba con <button id="btn-quick-fill" class="text-cyan-700 font-bold underline">${targetCode}</button>.
-          </p>
         </div>
 
         <button id="btn-submit-code" class="w-full min-h-12 ${
@@ -293,7 +290,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
         showError("Ese QR es de validación de stand, no del cromo. Mirá la pista y buscá la pegatina.", fromCamera);
         return;
       }
-      showError(`Código de cromo no válido. Prueba con ${targetCode}`, fromCamera);
+      showError("Código de cromo no válido. Verificá la pista e intentá de nuevo.", fromCamera);
       return;
     }
 
@@ -307,7 +304,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
       showError('Parece un QR de cromo secreto. Volvé a la estación y usá "Buscar el cromo".', fromCamera);
       return;
     }
-    showError("Código no válido. Prueba con " + targetCode, fromCamera);
+    showError("Código no válido. Verificá e intentá de nuevo.", fromCamera);
   }
 
   // ---- Lógica de sello y valoración ----
@@ -348,10 +345,6 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
 
   tabCam.addEventListener("click", () => activateTab("cam"));
   tabCode.addEventListener("click", () => activateTab("code"));
-
-  container.querySelector("#btn-quick-fill").addEventListener("click", () => {
-    inputCode.value = targetCode;
-  });
 
   function submitManual() {
     handleCode(inputCode.value, "manual");
