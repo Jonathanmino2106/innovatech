@@ -2,7 +2,7 @@
  * INNOVARTECH - Vista de Creación/Recuperación de Pasaporte (crea-pasaporte)
  * Pestañas formales: "Crear mi pasaporte" (nickname + perfil de visitante) y
  * "Ya tengo mi pasaporte" (recuperación por código slug-del-nickname-0001, sin contraseñas).
- * Registra el usuario en Supabase (tabla usuarios) y en localStorage antes de habilitar home1.
+ * Registra el usuario en Supabase (tabla usuarios) y en localStorage antes de habilitar la vista de inicio.
  */
 
 export function createCreaPasaporteView(app) {
@@ -195,7 +195,7 @@ export function createCreaPasaporteView(app) {
         const ok = await app.restoreSession(code);
 
         if (ok) {
-          app.navigate("home1");
+          app.navigate("inicio");
         } else {
           btnRestore.disabled = false;
           btnRestoreText.textContent = "Recuperar mi recorrido";
@@ -227,15 +227,15 @@ export function createCreaPasaporteView(app) {
               Tu recorrido ya tiene una identidad. Guarda este código si quieres volver a encontrarlo.
             </p>
 
-            <!-- Código Copiable y Botón Entrar a home1 -->
+            <!-- Código Copiable y Botón Entrar a la vista de inicio -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-7">
               <button id="btn-copy-code" class="w-full sm:w-auto min-h-12 bg-[#163659] hover:bg-[#1a426e] border border-cyan-500/40 text-cyan-200 px-4 py-3 rounded-xl font-mono text-sm font-bold flex items-center justify-center gap-2 transition-all">
                 <span>${u.passportCode}</span>
                 <i data-lucide="copy" class="w-4 h-4 text-cyan-400"></i>
               </button>
 
-              <button id="btn-enter-home1" class="w-full sm:w-auto min-h-12 bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md">
-                <span>Entrar al recorrido</span>
+              <button id="btn-enter-inicio" class="w-full sm:w-auto min-h-12 bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md">
+                <span>Entrar a la feria</span>
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
               </button>
             </div>
@@ -248,8 +248,9 @@ export function createCreaPasaporteView(app) {
         app.showToast("Código copiado al portapapeles");
       });
 
-      container.querySelector("#btn-enter-home1").addEventListener("click", () => {
-        app.navigate("home1");
+      container.querySelector("#btn-enter-inicio").addEventListener("click", () => {
+        // Tras crear el pasaporte, la primer vista es la portada 'inicio'
+        app.navigate("inicio");
       });
     }
 

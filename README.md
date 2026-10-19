@@ -87,7 +87,7 @@ Abrí la hoja en el navegador, presioná **Imprimir** (al 100%, sin "ajustar a p
 ## 🧩 Principios de la Arquitectura
 
 1. **Aislamiento por Stand:** Cada archivo `stand01.js` a `stand05.js` exporta únicamente los metadatos y especificaciones técnicas de su proyecto, renderizados por la plantilla común `stands/standView.js`. Si se modifica o agrega contenido a un stand, **ningún otro stand se ve afectado**. Los retos pedagógicos se gestionan externamente con Google Forms.
-2. **Enrutador Central Reactivo:** `app.js` maneja el ciclo de vida del DOM inyectando las vistas en `#app`, controla las rutas (`crea-pasaporte`, `home1`, `map`, `qr`, `stats`, `passport`, `ranks`, `stand-01`... `stand-05`) y sincroniza el estado persistente en `localStorage` + Supabase.
+2. **Enrutador Central Reactivo:** `app.js` maneja el ciclo de vida del DOM inyectando las vistas en `#app`, controla las rutas (`crea-pasaporte`, `inicio`, `recorrido`, `map`, `qr`, `stats`, `passport`, `ranks`, `stand-01`... `stand-05`) y sincroniza el estado persistente en `localStorage` + Supabase.
 3. **Navbar Desacoplado:** El componente `navbar.js` recibe el nombre de la ruta activa y emite eventos de navegación a través de su callback hacia el enrutador.
 4. **Mobile-First 100%:** Diseñado exclusivamente para interactuar en pantallas de smartphones con áreas táctiles mínimas de 48px (`min-h-12`) y áreas de seguridad de borde (`safe-bottom`).
 
