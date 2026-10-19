@@ -82,6 +82,10 @@ Abrí la hoja en el navegador, presioná **Imprimir** (al 100%, sin "ajustar a p
 
 > La app valida el **texto** del QR (ej. `STAND01` o `CROMO01`), no la imagen: si reimprimís uno, asegurate de que el contenido sea exactamente ese código.
 
+### QR institucional de la feria
+
+`qr-innovartech.png` (396×396 px) y `qr-innovartech.svg` (vectorial, escalable para carteles grandes) contienen el enlace de producción **`https://innovartech.vercel.app/`**: sirve para que los visitantes ingresen a la app escaneándolo desde el afiche de entrada.
+
 ---
 
 ## 🌐 Despliegue en Vercel (producción)
