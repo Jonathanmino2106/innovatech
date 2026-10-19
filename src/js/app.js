@@ -8,6 +8,7 @@
 import { supabase } from './supabaseClient.js';
 import { getRankTitle } from './ranks.js';
 import { createHeader, createBottomNavbar } from '../components/navbar.js';
+import { showRutaCompletaModal } from '../components/rutaCompleta.js';
 import { createCreaPasaporteView } from './views/loginView.js';
 import { createInicioView } from './views/inicioView.js';
 import { createRecorridoView } from './views/recorridoView.js';
@@ -468,6 +469,12 @@ class AppRouter {
       } catch (e) {
         console.warn("Aviso al persistir en Supabase:", e);
       }
+    }
+
+    // RUTA COMPLETA: al conseguir los 5 sellos se despliega el agradecimiento
+    // con acceso al formulario de votación del mejor stand.
+    if (this.getCompletedCount() === this.standsList.length) {
+      showRutaCompletaModal();
     }
 
     return true;
