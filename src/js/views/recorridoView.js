@@ -5,6 +5,8 @@
  */
 
 import { getRankTitle } from '../ranks.js';
+// Mismo enlace de votación que usa el modal de ruta completa (rutaCompleta.js)
+import { FORM_VOTACION_URL } from '../../components/rutaCompleta.js';
 
 export function createRecorridoView(app) {
   const container = document.createElement("div");
@@ -95,6 +97,35 @@ export function createRecorridoView(app) {
       </div>
 
     </div>
+
+    <!-- Ruta completa (5/5 sellos): acceso permanente a la votación del mejor stand.
+         Aparece acá por si el visitante cerró el modal de agradecimiento. -->
+    ${completed === total ? `
+      <div class="rounded-3xl border border-cyan-200 bg-cyan-50/70 p-5 shadow-sm flex flex-col sm:flex-row sm:items-center gap-4">
+        <div class="w-11 h-11 rounded-2xl bg-white text-cyan-600 border border-cyan-200 flex items-center justify-center shrink-0 shadow-sm">
+          <i data-lucide="trophy" class="w-5 h-5"></i>
+        </div>
+        <div class="flex-1">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-cyan-700 font-bold block mb-0.5">
+            Ruta completa
+          </span>
+          <h3 class="text-sm font-extrabold text-slate-900">Ya sellaste las 5 estaciones.</h3>
+          <p class="text-xs text-slate-600 mt-0.5 leading-snug">
+            Contanos cuál fue tu stand favorito en la votación oficial de la feria.
+          </p>
+        </div>
+        <a
+          href="${FORM_VOTACION_URL}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="shrink-0 min-h-12 bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-bold text-xs px-5 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm"
+        >
+          <i data-lucide="vote" class="w-4 h-4"></i>
+          <span>Votar ahora</span>
+          <i data-lucide="external-link" class="w-3.5 h-3.5 opacity-80"></i>
+        </a>
+      </div>
+    ` : ""}
 
     <!-- Sección "TU TABLERO: Elige tu siguiente movimiento" -->
     <div class="space-y-3 pt-2">
