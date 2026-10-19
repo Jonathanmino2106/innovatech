@@ -1,0 +1,19 @@
+# Archivos que NO deben subirse como archivos públicos al deploy de Vercel.
+# No afectan el build: el CSS generado, config.js y los videos siguen subiendo
+# (este filtro se aplica a lo que Vercel sirve, igual que .gitignore para git).
+
+# Esquema de la base de datos (estructura interna de Supabase)
+schema.sql
+
+# Documentación interna y especificaciones del proyecto
+specs/
+AGENT.md
+
+# Generador de QR (script de desarrollo, no se usa en producción)
+tools/
+
+# Servidor estático local (en Vercel los archivos los sirve la propia plataforma)
+server.js
+
+# Respaldo de videos originales sin comprimir (además está en .gitignore)
+assets/multimedia/originals/

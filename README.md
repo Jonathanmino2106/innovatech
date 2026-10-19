@@ -84,6 +84,42 @@ Abrí la hoja en el navegador, presioná **Imprimir** (al 100%, sin "ajustar a p
 
 ---
 
+## 🌐 Despliegue en Vercel (producción)
+
+El repositorio está preparado para el plan **Hobby (gratuito)**: Vercel clona el repo, corre el build y sirve todo como archivos estáticos desde su CDN.
+
+**1. Importar el proyecto**
+
+vercel.com → *Add New…* → *Project* → importar `Jonathanmino2106/innovatech`.
+
+**2. Configuración del build**
+
+| Campo | Valor |
+|---|---|
+| Framework Preset | `Other` |
+| Build Command | `npm run build` |
+| Output Directory | `.` |
+| Root Directory | `.` (raíz) |
+
+**3. Variables de entorno** — *Settings → Environment Variables*:
+
+| Nombre | Valor |
+|---|---|
+| `SUPABASE_URL` | URL del proyecto Supabase (misma que el `.env` local) |
+| `SUPABASE_ANON_KEY` | anon / public key de Supabase |
+
+**4. Deploy** → queda publicado en `https://<nombre-proyecto>.vercel.app`.
+
+### Notas importantes
+
+- `npm run build` ejecuta `build.js` (genera `src/js/config.js` con las env vars) y `npm run css` (genera `src/css/tailwind.generated.css`). Ambos archivos están en `.gitignore`: **nunca se commitean**, se regeneran en cada deploy.
+- `.vercelignore` evita que `schema.sql`, `specs/`, `tools/`, `AGENT.md` y `server.js` se publiquen como archivos accesibles desde la URL.
+- `server.js` es únicamente el servidor local de desarrollo (`npm run dev`). En Vercel lo sirve la propia plataforma, que además soporta peticiones *Range* (HTTP 206), por lo que los videos se reproducen sin descargarlos completos.
+- Cada **push a `main`** redespliega producción automáticamente; cada rama genera una **URL de preview** para probar cambios sin tocar la versión pública.
+- La versión 1.0 del proyecto está marcada con el tag `v1.0.0`.
+
+---
+
 ## 🧩 Principios de la Arquitectura
 
 1. **Aislamiento por Stand:** Cada archivo `stand01.js` a `stand05.js` exporta únicamente los metadatos y especificaciones técnicas de su proyecto, renderizados por la plantilla común `stands/standView.js`. Si se modifica o agrega contenido a un stand, **ningún otro stand se ve afectado**. Los retos pedagógicos se gestionan externamente con Google Forms.
