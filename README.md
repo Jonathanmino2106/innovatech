@@ -38,7 +38,7 @@ innovartech\
 │           ├── statsView.js       # Gráficos de torta/dona y tabla de clasificación (Chart.js)
 │           └── stands\
 │               ├── standView.js   # Plantilla común de estación (hero + validación QR)
-│               ├── stand01.js     # Stand 01: Robótica Industrial & Brazos Articulados
+│               ├── stand01.js     # Stand 01: Game Zone
 │               ├── stand02.js     # Stand 02: Drones Autónomos & Visión Espacial
 │               ├── stand03.js     # Stand 03: Robots Móviles & Vehículos Autónomos (AGV)
 │               ├── stand04.js     # Stand 04: Robots Humanoides & Locomoción Bípeda

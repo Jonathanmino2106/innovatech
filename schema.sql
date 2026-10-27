@@ -31,7 +31,7 @@ CREATE TABLE stands (
 );
 
 INSERT INTO stands (id_stand, nombre_stand) VALUES
-    ('STAND01', 'Robótica Industrial & Brazos Articulados'),
+    ('STAND01', 'Game Zone'),
     ('STAND02', 'Drones Autónomos & Visión Espacial'),
     ('STAND03', 'Robots Móviles & Vehículos Autónomos (AGV)'),
     ('STAND04', 'Robots Humanoides & Locomoción Bípeda'),

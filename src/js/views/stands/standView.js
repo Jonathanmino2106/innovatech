@@ -80,6 +80,21 @@ export function createStandView(app, info) {
 
     </div>
 
+    ${info.about ? `
+    <!-- Sobre este stand: texto completo (solo si info.about existe) -->
+    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
+      <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold block">
+        Sobre este stand
+      </span>
+      <div class="space-y-3 text-sm text-slate-600 leading-relaxed">
+        ${info.about.map((p, i) => i === 0
+          ? `<p class="text-base font-bold text-slate-900">${p}</p>`
+          : `<p>${p}</p>`
+        ).join("")}
+      </div>
+    </div>
+    ` : ""}
+
     ${cromo ? `
     <!-- Misión Secreta: el cromo escondido de ESTA estación -->
     <div class="rounded-3xl border ${

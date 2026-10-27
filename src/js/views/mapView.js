@@ -95,10 +95,10 @@ export function createMapView(app) {
 
         <div>
           <h3 id="card-stand-title" class="text-xl font-bold text-slate-900 leading-tight">
-            Robótica Industrial & Brazos Articulados
+            Game Zone
           </h3>
           <p id="card-stand-category" class="text-xs text-slate-500 mt-1 font-medium">
-            Automatización & Visión Artificial
+            Videojuegos y programación · 6.º año
           </p>
         </div>
 
