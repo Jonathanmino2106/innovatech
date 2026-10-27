@@ -229,8 +229,15 @@ export function createInicioView(app) {
         <span class="text-[10px] font-mono uppercase tracking-wider text-cyan-700 font-bold block mb-1">
           Recorrido visual
         </span>
-        <h3 class="text-lg font-extrabold text-slate-900">Así se vive la feria</h3>
-        <p class="text-xs text-slate-500 mt-1">Tocá cualquier tarjeta para verla a pantalla completa.</p>
+        <h3 class="text-lg font-extrabold text-slate-900">Imágenes, Música y Emociones</h3>
+        <p class="text-xs text-slate-500 mt-1">
+          Un espacio para compartir recuerdos, experiencias y emociones de nuestra comunidad
+          educativa. A través de fotografías, videos y producciones audiovisuales, revivimos
+          momentos especiales de nuestros alumnos y de la vida escolar. Porque aprender también
+          es crear, compartir y emocionarse.
+          <strong class="text-slate-700">¡Los invitamos a disfrutar de este recorrido audiovisual!</strong>
+        </p>
+        <p class="text-[10px] text-slate-400 mt-1">Tocá cualquier tarjeta para verla a pantalla completa.</p>
       </div>
 
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
