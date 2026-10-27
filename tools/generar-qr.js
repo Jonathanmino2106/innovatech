@@ -37,9 +37,9 @@ const SETS = {
   cromos: {
     dir: path.join(ROOT, "assets", "cromos"),
     sheet: "qr-cromos.html",
-    title: "QR de cromos secretos",
+    title: "QR de estampas secretas",
     lead: 'Imprimí, cortá por la línea punteada y pegá cada QR <b>oculto</b> en su stand (donde dice la pista).',
-    note: "Registra la misión secreta (botón \"Buscar el cromo\" dentro de cada stand)."
+    note: "Registra la misión secreta (botón \"Buscar la estampa\" dentro de cada stand)."
   }
 };
 

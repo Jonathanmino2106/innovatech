@@ -117,7 +117,7 @@ export function createPassportView(app) {
           <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold block">CROMOS SECRETOS</span>
           <h3 class="text-lg font-extrabold text-slate-900">Colección oculta</h3>
         </div>
-        <span class="text-xs font-semibold text-amber-600">${chromeCount}/${chromeTotal} cromos</span>
+        <span class="text-xs font-semibold text-amber-600">${chromeCount}/${chromeTotal} estampas</span>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
@@ -143,7 +143,7 @@ export function createPassportView(app) {
                   ${found ? cromo.name : '???'}
                 </h4>
                 <span class="text-[10px] ${found ? 'text-amber-200' : 'text-slate-400'}">
-                  ${found ? `Cromo ${stand.num} · ${cromo.rarity}` : `Stand ${stand.num} · sin encontrar`}
+                  ${found ? `Estampa ${stand.num} · ${cromo.rarity}` : `Stand ${stand.num} · sin encontrar`}
                 </span>
               </div>
             </div>
@@ -152,7 +152,7 @@ export function createPassportView(app) {
       </div>
 
       <p class="text-[11px] text-slate-400 leading-relaxed">
-        Cada estación esconde un cromo con su propia pista. No suman sellos ni rango: son sólo para quien mira bien.
+        Cada estación esconde una estampa con su propia pista. No suman sellos ni rango: son sólo para quien mira bien.
       </p>
     </div>
 

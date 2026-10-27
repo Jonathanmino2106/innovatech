@@ -120,7 +120,7 @@ export function createStandView(app, info) {
         ${cromoFound ? `
         <!-- Estado: cromo coleccionado (efecto foil) -->
         <div>
-          <h3 class="text-xl font-extrabold leading-snug">¡Cromo encontrado!</h3>
+          <h3 class="text-xl font-extrabold leading-snug">¡Estampa encontrada!</h3>
           <p class="text-xs text-slate-300 mt-1">Sumaste esta pieza a tu colección oculta. Queda registrada en tu pasaporte.</p>
         </div>
 
@@ -129,7 +129,7 @@ export function createStandView(app, info) {
             <i data-lucide="gem" class="w-7 h-7"></i>
           </div>
           <div class="min-w-0">
-            <span class="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold block">Cromo ${cromo.code}</span>
+            <span class="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold block">Estampa ${cromo.code}</span>
             <h4 class="text-lg font-extrabold truncate">${cromo.name}</h4>
             <span class="text-[10px] text-slate-300">Rareza ${cromo.rarity}${cromoDate ? ` · obtenido el ${cromoDate}` : ""}</span>
           </div>
@@ -137,12 +137,12 @@ export function createStandView(app, info) {
 
         <button id="btn-goto-collection" class="w-full min-h-12 bg-white/10 hover:bg-white/20 border border-white/15 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-all active:scale-95">
           <i data-lucide="layers" class="w-4 h-4"></i>
-          <span>Ver mi colección de cromos</span>
+          <span>Ver mi colección de estampas</span>
         </button>
         ` : `
         <!-- Estado: pista de la misión secreta -->
         <div>
-          <h3 class="text-xl font-extrabold leading-snug">Hay un cromo escondido en esta estación.</h3>
+          <h3 class="text-xl font-extrabold leading-snug">Hay una estampa escondida en esta estación.</h3>
           <p class="text-xs text-slate-300 mt-1">Encontrá la pegatina oculta, escaneá su QR y sumalo a tu colección. No suma sellos: es sólo para quien mira bien.</p>
         </div>
 
@@ -156,7 +156,7 @@ export function createStandView(app, info) {
 
         <button id="btn-find-cromo" class="w-full min-h-12 bg-amber-400 hover:bg-amber-300 active:scale-95 text-[#0f2742] font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-all shadow-md">
           <i data-lucide="scan-search" class="w-4 h-4"></i>
-          <span>Buscar el cromo</span>
+          <span>Buscar la estampa</span>
         </button>
         `}
 

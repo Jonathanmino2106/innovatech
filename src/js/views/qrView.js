@@ -20,7 +20,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
 
   // Códigos según modo: cromo secreto o validación de stand
   const targetCode = isCromo && cromo ? cromo.code : currentStand.code;
-  const codeLabel = isCromo ? "Código del cromo" : "Código del stand";
+  const codeLabel = isCromo ? "Código de la estampa" : "Código del stand";
 
   container.innerHTML = `
     <!-- Botón Volver -->
@@ -35,7 +35,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
         ${isCromo ? "MISIÓN SECRETA" : "VALIDACIÓN FÍSICA"}
       </span>
       <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">
-        ${isCromo ? "Encontrá el cromo." : "Activa tu sello."}
+        ${isCromo ? "Encontrá la estampa." : "Activa tu sello."}
       </h2>
       <p class="text-xs text-slate-500 mt-1">
         Estás en <span class="font-bold text-slate-800">${currentStand.name}</span>. Escanea el QR ${
@@ -83,7 +83,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
         </div>
 
         <p id="cam-hint" class="text-center text-[11px] text-slate-400 leading-relaxed">
-          Apuntá la cámara al QR ${isCromo ? "del cromo escondido" : "institucional de la estación"}.
+          Apuntá la cámara al QR ${isCromo ? "de la estampa escondida" : "institucional de la estación"}.
         </p>
       </div>
 
@@ -107,7 +107,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
         <button id="btn-submit-code" class="w-full min-h-12 ${
           isCromo ? "bg-amber-500 hover:bg-amber-400" : "bg-[#132840] hover:bg-[#0a1827]"
         } active:scale-95 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-all shadow-md">
-          <span>${isCromo ? "Registrar cromo encontrado" : "Validar y guardar sello"}</span>
+          <span>${isCromo ? "Registrar estampa encontrada" : "Validar y guardar sello"}</span>
           <i data-lucide="check" class="w-4 h-4"></i>
         </button>
       </div>
@@ -142,7 +142,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
       <div id="box-cromo" class="${isCromo && app.isChromeFound(currentStand.id) ? '' : 'hidden'} p-4 rounded-2xl bg-amber-50 border border-amber-300 space-y-3">
         <div class="flex items-center gap-2 text-amber-900 font-bold text-xs">
           <i data-lucide="gem" class="w-4 h-4 text-amber-600"></i>
-          <span>¡Cromo encontrado!</span>
+          <span>¡Estampa encontrada!</span>
         </div>
         <div class="flex items-center gap-3">
           <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-[#0f2742] flex items-center justify-center shrink-0">
@@ -150,7 +150,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
           </div>
           <div class="min-w-0">
             <span class="text-[10px] font-mono uppercase tracking-widest text-amber-700 font-bold block">${cromo ? cromo.code : ""}</span>
-            <h4 class="text-sm font-extrabold text-slate-900 truncate">${cromo ? cromo.name : "Cromo secreto"}</h4>
+            <h4 class="text-sm font-extrabold text-slate-900 truncate">${cromo ? cromo.name : "Estampa secreta"}</h4>
             ${cromo ? `<span class="text-[10px] text-amber-800">Rareza ${cromo.rarity}</span>` : ""}
           </div>
         </div>
@@ -187,7 +187,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
       camHint.classList.toggle("hidden", state !== "ok");
       if (state === "ok") {
         camHint.innerHTML = `Cámara <b class="text-emerald-500">activa</b> · apuntá al QR ${
-          isCromo ? "del cromo escondido" : "institucional de la estación"
+          isCromo ? "de la estampa escondida" : "institucional de la estación"
         } y mantenlo dentro del recuadro.`;
       }
     }
@@ -287,10 +287,10 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
         return;
       }
       if (standByCode(val)) {
-        showError("Ese QR es de validación de stand, no del cromo. Mirá la pista y buscá la pegatina.", fromCamera);
+        showError("Ese QR es de validación de stand, no de la estampa. Mirá la pista y buscá la pegatina.", fromCamera);
         return;
       }
-      showError("Código de cromo no válido. Verificá la pista e intentá de nuevo.", fromCamera);
+      showError("Código de estampa no válido. Verificá la pista e intentá de nuevo.", fromCamera);
       return;
     }
 
@@ -301,7 +301,7 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
       return;
     }
     if (standByCromoCode(val)) {
-      showError('Parece un QR de cromo secreto. Volvé a la estación y usá "Buscar el cromo".', fromCamera);
+      showError('Parece un QR de estampa secreta. Volvé a la estación y usá "Buscar la estampa".', fromCamera);
       return;
     }
     showError("Código no válido. Verificá e intentá de nuevo.", fromCamera);
@@ -338,8 +338,8 @@ export function createQrView(app, targetStandId = null, mode = "sello") {
     boxCromo.classList.remove("hidden");
     const via = metodo === "qr" ? "cámara QR" : "código manual";
     app.showToast(already
-      ? `Cromo ya registrado · método: ${via}`
-      : `¡Cromo encontrado: ${stand.cromo.name}! · por ${via}`);
+      ? `Estampa ya registrada · método: ${via}`
+      : `¡Estampa encontrada: ${stand.cromo.name}! · por ${via}`);
     if (window.lucide) window.lucide.createIcons();
   }
 

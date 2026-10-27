@@ -20,7 +20,7 @@ export const STAND_02_INFO = {
     code: "CROMO02",
     name: "Ala de Carbono",
     rarity: "Rara",
-    hint: "Los drones vuelan alto, pero el cromo no: está escondido en el piso de la zona de vuelo, detrás de la pista de aterrizaje."
+    hint: "Los drones vuelan alto, pero la estampa no: está escondida en el piso de la zona de vuelo, detrás de la pista de aterrizaje."
   }
 };
 

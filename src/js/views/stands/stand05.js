@@ -20,7 +20,7 @@ export const STAND_05_INFO = {
     code: "CROMO05",
     name: "Sensor EMG",
     rarity: "Mítica",
-    hint: "El cromo siente tus impulsos: está pegado al respaldo de la silla del exoesqueleto, del lado izquierdo."
+    hint: "La estampa siente tus impulsos: está pegada al respaldo de la silla del exoesqueleto, del lado izquierdo."
   }
 };
 

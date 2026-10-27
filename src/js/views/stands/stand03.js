@@ -20,7 +20,7 @@ export const STAND_03_INFO = {
     code: "CROMO03",
     name: "Rueda Omnidireccional",
     rarity: "Común",
-    hint: "Seguí la línea marcada en el suelo: el cromo espera al final del carril del AGV, pegado a la estantería."
+    hint: "Seguí la línea marcada en el suelo: la estampa espera al final del carril del AGV, pegada a la estantería."
   }
 };
 
