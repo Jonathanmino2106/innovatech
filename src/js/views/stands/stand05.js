@@ -13,7 +13,7 @@ export const STAND_05_INFO = {
   category: "Biónica · Ala Médica Central",
   badgeLabel: "STAND 05 · BIOMEDICINA",
   location: "Pabellón Central / Ala Médica Biónica",
-  mapCoords: { x: 50, y: 35 },
+  mapCoords: { x: 62, y: 71 },
   description: "Estructuras biónicas de asistencia muscular motorizadas mediante señales electromiográficas (EMG) dérmicas.",
   // Misión secreta: cromo escondido en esta estación (pista editable por el organizador)
   cromo: {

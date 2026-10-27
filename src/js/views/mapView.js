@@ -1,6 +1,6 @@
 /**
- * INNOVARTECH - Vista de Mapa Demostrativo (vista-mapa.png)
- * Plano con pasillos redondeados en cruz, los 5 pines interactivos y la tarjeta lateral del stand.
+ * INNOVARTECH - Vista de Mapa (assets/mapa_recorrido.png)
+ * Plano oficial de la feria con los 5 pines interactivos y la tarjeta lateral del stand.
  */
 
 export function createMapView(app) {
@@ -15,7 +15,7 @@ export function createMapView(app) {
     <div class="flex items-start justify-between">
       <div>
         <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold block mb-0.5">
-          PLANO DEMOSTRATIVO
+          PLANO OFICIAL DE LA FERIA
         </span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           Elige tu próxima señal.
@@ -32,19 +32,16 @@ export function createMapView(app) {
     <!-- Layout Grid: Mapa (3 cols) + Tarjeta Lateral (2 cols) -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-start">
       
-      <!-- Plano Esquemático de la Feria -->
+      <!-- Plano Oficial de la Feria -->
       <div class="md:col-span-3 space-y-3">
-        <div class="relative w-full aspect-[4/3] rounded-3xl border-2 border-slate-200 overflow-hidden shadow-inner map-canvas-grid flex items-center justify-center">
+        <div class="relative w-full aspect-[3704/2059] rounded-3xl border-2 border-slate-200 overflow-hidden shadow-inner map-canvas-grid bg-white flex items-center justify-center">
           
-          <!-- Pasillos en Cruz Vectoriales -->
-          <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 300">
-            <!-- Pasillo Horizontal -->
-            <rect x="50" y="130" width="300" height="40" rx="20" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
-            <!-- Pasillo Vertical -->
-            <rect x="180" y="30" width="40" height="240" rx="20" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
-            <!-- Cruce central limpio -->
-            <rect x="181" y="131" width="38" height="38" fill="#ffffff" />
-          </svg>
+          <!-- Mapa oficial (plano con la división de cada stand) -->
+          <img
+            src="./assets/mapa_recorrido.png"
+            alt="Plano oficial de la feria con la ubicación de cada stand"
+            class="absolute inset-0 w-full h-full object-contain"
+          />
 
           <!-- Capa de Pines de los 5 Stands -->
           <div id="map-pins-container" class="absolute inset-0 pointer-events-auto">
