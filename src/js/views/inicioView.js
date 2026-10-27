@@ -105,28 +105,66 @@ export function createInicioView(app) {
     </div>
 
     <!-- ============================================================
-         DE QUÉ TRATA LA FERIA
+         DE QUÉ TRATA LA FERIA (según bienvenida InnovartTech 2026)
          ============================================================ -->
     <div class="space-y-3">
       <span class="text-[10px] font-mono uppercase tracking-wider text-cyan-700 font-bold block">
         De qué trata
       </span>
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-        Una feria donde los proyectos se visitan.
-      </h2>
-      <div class="space-y-3 text-sm text-slate-600 leading-relaxed">
-        <p>
-          <strong class="text-slate-900">INNOVARTECH</strong> es la feria tecnológica de robótica de la escuela:
-          estudiantes y docentes convierten sus proyectos en <strong class="text-slate-900">5 estaciones
-          abiertas</strong> que se recorren, se prueban y se explican en vivo. Nada es vitrina: en cada stand
-          hay algo que ver, tocar o desafiar.
+      <div class="space-y-1">
+        <p class="text-[10px] font-mono uppercase tracking-widest text-slate-400 font-bold">
+          Colegio San José · InnovartTech 2026
         </p>
-        <p>
-          Cada visitante recibe un <strong class="text-slate-900">pasaporte digital</strong>: al llegar a una
-          estación escanea su QR, desbloquea un sello y sube de rango. Al completar las cinco, cierra el
-          recorrido completo de la feria.
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Feria de Innovación, Arte y Tecnología
+        </h2>
+        <p class="text-sm font-bold text-cyan-700">
+          ¡Donde las ideas cobran vida!
         </p>
       </div>
+      <div class="space-y-3 text-sm text-slate-600 leading-relaxed">
+        <p>
+          Te invitamos a descubrir cómo nuestros estudiantes transforman la creatividad en
+          <strong class="text-slate-900">proyectos tecnológicos</strong>. Desde sus primeros circuitos y
+          mecanismos hasta la robótica con <strong class="text-slate-900">Arduino</strong> y la programación
+          de videojuegos, cada creación refleja un camino de aprendizaje, experimentación y trabajo en equipo.
+        </p>
+        <p>
+          En el Colegio San José aprendemos tecnología <strong class="text-slate-900">creando, explorando y
+          resolviendo desafíos</strong>.
+        </p>
+      </div>
+
+      <!-- Cómo recorrer la feria: 4 pasos -->
+      <div class="rounded-2xl border border-cyan-100 bg-cyan-50/60 p-4 space-y-3">
+        <h3 class="text-xs font-extrabold uppercase tracking-wider text-cyan-800">
+          ¿Cómo recorrer la feria?
+        </h3>
+        <ol class="space-y-2">
+          <li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-cyan-600 text-white text-[10px] font-bold flex items-center justify-center mt-0.5">1</span>
+            <span>Explorá el mapa y seguí los recorridos señalados.</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-cyan-600 text-white text-[10px] font-bold flex items-center justify-center mt-0.5">2</span>
+            <span>Visitá las aulas y descubrí los proyectos.</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-cyan-600 text-white text-[10px] font-bold flex items-center justify-center mt-0.5">3</span>
+            <span>Escaneá el QR de cada stand para conocer su propuesta y registrar tu visita.</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-cyan-600 text-white text-[10px] font-bold flex items-center justify-center mt-0.5">4</span>
+            <span>Interactuá con los estudiantes y sus creaciones.</span>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Cierre -->
+      <p class="text-sm font-bold text-slate-900 leading-relaxed">
+        ¡Cada aula es una experiencia y cada proyecto, una idea hecha realidad!
+        <span class="text-cyan-700">¡Disfrutá InnovartTech 2026!</span>
+      </p>
     </div>
 
     <!-- ============================================================
