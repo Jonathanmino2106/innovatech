@@ -13,7 +13,7 @@ export const STAND_01_INFO = {
   category: "Videojuegos y programación · 6.º año",
   badgeLabel: "STAND 01 · ESPECIAL",
   location: "Entrada / Detrás de la capilla / Sala de informática",
-  mapCoords: { x: 12, y: 35 },
+  mapCoords: { x: 7, y: 23 },
   description: "Videojuegos desarrollados por los estudiantes de 6.º año: creatividad, diseño, lógica y programación que se transforman en experiencias interactivas.",
   // Texto completo (según bienvenida InnovartTech GameZone): se muestra en la página del stand
   about: [

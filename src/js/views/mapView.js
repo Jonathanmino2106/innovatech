@@ -34,7 +34,7 @@ export function createMapView(app) {
       
       <!-- Plano Oficial de la Feria -->
       <div class="md:col-span-3 space-y-3">
-        <div class="relative w-full aspect-[3704/2059] rounded-3xl border-2 border-slate-200 overflow-hidden shadow-inner map-canvas-grid bg-white flex items-center justify-center">
+        <div class="relative w-full aspect-[2240/1395] rounded-3xl border-2 border-slate-200 overflow-hidden shadow-inner map-canvas-grid bg-white flex items-center justify-center">
           
           <!-- Mapa oficial (plano con la división de cada stand) -->
           <img

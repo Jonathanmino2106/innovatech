@@ -13,7 +13,7 @@ export const STAND_03_INFO = {
   category: "Logística Autónoma · Pabellón B",
   badgeLabel: "STAND 03 · FLOTAS INTELIGENTES",
   location: "Pabellón B / Zona Logística Central",
-  mapCoords: { x: 60, y: 79 },
+  mapCoords: { x: 86, y: 87 },
   description: "Plataformas robóticas móviles omnidireccionales para almacenes automatizados y esquiva dinámica de peatones.",
   // Misión secreta: cromo escondido en esta estación (pista editable por el organizador)
   cromo: {
