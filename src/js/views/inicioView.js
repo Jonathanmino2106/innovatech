@@ -316,7 +316,7 @@ export function createInicioView(app) {
     const item = GALLERY[index];
     const mediaBox = lightboxEl.querySelector("#lb-media");
     mediaBox.innerHTML = item.type === "video"
-      ? `<video class="w-full max-h-[70vh] rounded-xl bg-black" controls autoplay playsinline poster="${item.poster}" src="${item.src}"></video>`
+      ? `<video class="w-full max-h-[70vh] rounded-xl bg-black" controls autoplay playsinline muted poster="${item.poster}" src="${item.src}"></video>`
       : `<img class="w-full max-h-[70vh] rounded-xl object-contain" src="${item.src}" alt="${item.title}" />`;
 
     lightboxEl.querySelector("#lb-title").textContent = item.title;
