@@ -13,7 +13,7 @@ export const STAND_04_INFO = {
   category: "Bípedos · Arena de Pruebas",
   badgeLabel: "STAND 04 · HUMANOIDES",
   location: "Pabellón B / Arena de Pruebas",
-  mapCoords: { x: 60, y: 51 },
+  mapCoords: { x: 86, y: 56 },
   description: "Robots de silueta humana capaces de caminar sobre terrenos irregulares y mantener equilibrio frente a empujes dinámicos.",
   // Misión secreta: cromo escondido en esta estación (pista editable por el organizador)
   cromo: {
