@@ -32,10 +32,10 @@ CREATE TABLE stands (
 
 INSERT INTO stands (id_stand, nombre_stand) VALUES
     ('STAND01', 'Game Zone'),
-    ('STAND02', 'Drones Autónomos & Visión Espacial'),
-    ('STAND03', 'Robots Móviles & Vehículos Autónomos (AGV)'),
-    ('STAND04', 'Robots Humanoides & Locomoción Bípeda'),
-    ('STAND05', 'Exoesqueletos & Robótica Médica');
+    ('STAND02', 'InnovarTech en Escena'),
+    ('STAND03', 'InnovartTech MotionArt'),
+    ('STAND04', 'InnovartTech RoboLab'),
+    ('STAND05', 'InnovartTech MotionArt');
 
 -- 3. Tabla Puente de Visitas / Sellos ---------------------------------------
 CREATE TABLE visitas_estaciones (

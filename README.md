@@ -39,10 +39,10 @@ innovartech\
 │           └── stands\
 │               ├── standView.js   # Plantilla común de estación (hero + validación QR)
 │               ├── stand01.js     # Stand 01: Game Zone
-│               ├── stand02.js     # Stand 02: Drones Autónomos & Visión Espacial
-│               ├── stand03.js     # Stand 03: Robots Móviles & Vehículos Autónomos (AGV)
-│               ├── stand04.js     # Stand 04: Robots Humanoides & Locomoción Bípeda
-│               └── stand05.js     # Stand 05: Exoesqueletos & Robótica Médica
+│               ├── stand02.js     # Stand 02: InnovarTech en Escena
+│               ├── stand03.js     # Stand 03: InnovartTech MotionArt
+│               ├── stand04.js     # Stand 04: InnovartTech RoboLab
+│               └── stand05.js     # Stand 05: InnovartTech MotionArt
 └── README.md
 ```
 

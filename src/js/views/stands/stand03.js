@@ -1,5 +1,5 @@
 /**
- * INNOVARTECH - Stand 03: Robots Móviles & Vehículos Autónomos (AGV/AMR)
+ * INNOVARTECH - Stand 03: InnovartTech MotionArt
  * Los retos/trivias de esta estación se gestionan externamente (Google Forms).
  */
 
@@ -9,18 +9,26 @@ export const STAND_03_INFO = {
   id: "stand-03",
   code: "STAND03",
   num: "03",
-  name: "Robots Móviles & Vehículos Autónomos (AGV)",
-  category: "Logística Autónoma · Pabellón B",
-  badgeLabel: "STAND 03 · FLOTAS INTELIGENTES",
-  location: "Pabellón B / Zona Logística Central",
+  name: "InnovartTech MotionArt",
+  category: "Arte, movimiento e iniciación a la robótica · 1.º y 2.º año",
+  badgeLabel: "STAND 03 · MOTIONART",
+  location: "Edificio Secundaria / Aula 3",
   mapCoords: { x: 86, y: 87 },
-  description: "Plataformas robóticas móviles omnidireccionales para almacenes automatizados y esquiva dinámica de peatones.",
+  description: "Primeras experiencias de robótica, circuitos eléctricos, mecanismos y esculturas autómatas creadas por estudiantes de 1.º y 2.º año combinando creatividad, ciencia y movimiento.",
+  // Texto completo (según bienvenida InnovartTech MotionArt): se muestra en la página del stand
+  about: [
+    "¡El arte y la tecnología en movimiento!",
+    "¿Puede la física convertirse en arte? Los estudiantes de 1.º y 2.º año presentan sus primeras experiencias de robótica, circuitos eléctricos y mecanismos, junto con una exposición de esculturas autómatas creadas desde Educación Artística.",
+    "A través de máquinas simples, como poleas, palancas y engranajes, combinan creatividad, ciencia y movimiento.",
+    "¡Estas creaciones necesitan de vos para cobrar vida! Girá una manivela, accioná un mecanismo y descubrí cómo una idea se transforma en movimiento.",
+    "¡En MotionArt, el arte no solo se observa, también se activa!"
+  ],
   // Misión secreta: cromo escondido en esta estación (pista editable por el organizador)
   cromo: {
     code: "CROMO03",
     name: "Rueda Omnidireccional",
     rarity: "Común",
-    hint: "Seguí la línea marcada en el suelo: la estampa espera al final del carril del AGV, pegada a la estantería."
+    hint: "Está escondido en algún rincón del stand MotionArt: mirá bien antes de irte."
   }
 };
 
