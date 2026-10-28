@@ -9,7 +9,7 @@ export const STAND_05_INFO = {
   id: "stand-05",
   code: "STAND05",
   num: "05",
-  name: "InnovartTech MotionArt",
+  name: "InnovartTech MotionArt 2",
   category: "Arte, movimiento e iniciación a la robótica · 1.º y 2.º año",
   badgeLabel: "STAND 05 · MOTIONART",
   location: "Edificio Secundaria / Aula 5",
