@@ -23,6 +23,8 @@ export const STAND_05_INFO = {
     "¡Estas creaciones necesitan de vos para cobrar vida! Girá una manivela, accioná un mecanismo y descubrí cómo una idea se transforma en movimiento.",
     "¡En MotionArt, el arte no solo se observa, también se activa!"
   ],
+  // Formulario de feedback de la muestra (Google Forms)
+  formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeLdY-6TIQHIIkAk8xH3nfUhdREVjBreFCRiaU3q4v3UObP_Q/viewform",
   // Misión secreta: cromo escondido en esta estación (pista editable por el organizador)
   cromo: {
     code: "CROMO05",

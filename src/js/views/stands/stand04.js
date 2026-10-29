@@ -23,6 +23,8 @@ export const STAND_04_INFO = {
     "Cada creación es el resultado de investigar, programar, construir y resolver desafíos. ¡Explorá los prototipos y descubrí cómo funcionan!",
     "¡En RoboLab, las ideas se programan y la innovación cobra vida!"
   ],
+  // Formulario de feedback de la muestra (Google Forms)
+  formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSd2J0J_bz5TsYTifeAO_0o19unn4owzyswbpjMIcSphXs9Ong/viewform",
   // Misión secreta: cromo escondido en esta estación (pista editable por el organizador)
   cromo: {
     code: "CROMO04",

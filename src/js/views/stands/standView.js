@@ -70,6 +70,39 @@ export function createStandView(app, info) {
             <i data-lucide="scan" class="w-4 h-4"></i>
             <span>${isCompleted ? 'Sello obtenido · ver QR' : 'Validar presencia · ver QR'}</span>
           </button>
+
+          ${info.formUrl && isCompleted ? `
+          <!-- Formulario de feedback de la muestra: aparece recién después de sellar -->
+          <div class="rounded-2xl border border-cyan-200 bg-cyan-50/70 p-4 space-y-3">
+            <div class="flex items-start gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-white text-cyan-600 border border-cyan-200 flex items-center justify-center shrink-0 shadow-sm">
+                <i data-lucide="message-square-heart" class="w-5 h-5"></i>
+              </div>
+              <div class="min-w-0">
+                <span class="text-[10px] font-mono uppercase tracking-widest text-cyan-700 font-bold block mb-0.5">
+                  Tu opinión cuenta
+                </span>
+                <h4 class="text-sm font-extrabold text-slate-900 leading-snug">Contanos tu experiencia</h4>
+                <p class="text-xs text-slate-600 mt-0.5 leading-snug">
+                  Ayudanos a mejorar la feria con tu feedback sobre esta estación.
+                </p>
+              </div>
+            </div>
+
+            <a
+              href="${info.formUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-full min-h-12 bg-[#13b8d4] hover:bg-[#0ea5be] active:scale-95 text-white font-bold text-xs px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm"
+            >
+              <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+              <span>Completar formulario</span>
+              <i data-lucide="external-link" class="w-3.5 h-3.5 opacity-80"></i>
+            </a>
+
+            <p class="text-[10px] text-slate-500 text-center">Se abre en una pestaña nueva.</p>
+          </div>
+          ` : ""}
         </div>
 
         <div class="bg-white px-4 py-3 rounded-2xl border border-slate-200/80 flex items-center gap-2.5 text-xs text-slate-500">
