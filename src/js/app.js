@@ -26,6 +26,22 @@ import { STAND_05_INFO, renderStand05 } from './views/stands/stand05.js';
 
 const STORAGE_KEY = "innovartech_session_v2";
 
+// ---- Helpers de sesión / ids ----------------------------------------------
+// En JS el número 0 es FALSY: validar ids con truthiness (`if (user.id)`)
+// rompió la app cuando Supabase devolvió id=0 (la sesión se borraba al
+// recargar y los sellos/estampas jamás se persistían). Siempre comparar
+// explícitamente contra null/undefined.
+function hasSession(user) {
+  return !!user && user.id !== null && user.id !== undefined && user.id !== "";
+}
+// id que se persiste en Supabase: cualquier id no-local ("local-*" = solo dispositivo).
+function isCloudId(id) {
+  return id !== null && id !== undefined && id !== "" && !String(id).startsWith("local-");
+}
+function hasCloudUser(user) {
+  return !!user && isCloudId(user.id);
+}
+
 class AppRouter {
   constructor() {
     this.appRoot = document.getElementById("app");
@@ -61,7 +77,7 @@ class AppRouter {
     // Al ingresar por primera vez, el sistema NO asigna usuario por defecto.
     // Si no hay usuario guardado en localStorage, muestra 'crea-pasaporte'.
     // Si ya existe, ingresa directo a 'inicio' y sincroniza datos con Supabase.
-    if (this.state.user && this.state.user.id) {
+    if (hasSession(this.state.user)) {
       await this.syncWithSupabase();
       this.navigate("inicio");
     } else {
@@ -93,6 +109,24 @@ class AppRouter {
   // Guardado en localStorage
   saveLocalState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+  }
+
+  // Escritura en Supabase con manejo de errores REAL.
+  // supabase-js NO lanza excepciones: devuelve { error } en el resultado.
+  // Antes los .insert()/.update() no se destructuraban y todo fallo
+  // (RLS, FK, red caída) era invisible: el try/catch no veía nada.
+  // `23505` (fila ya existente) se tolera: no es un fallo.
+  // Devuelve true si se guardó en la nube.
+  async cloudWrite(builder, scope) {
+    try {
+      const { error } = await builder;
+      if (error && error.code !== '23505') throw new Error(error.message);
+      return true;
+    } catch (e) {
+      console.error(`Supabase · ${scope}:`, e);
+      this.showToast("No se pudo guardar en la nube · se mantiene en este dispositivo");
+      return false;
+    }
   }
 
   // "Jonathan Mino" → "jonathan-mino" | "José 26!" → "jose-26"
@@ -226,8 +260,8 @@ class AppRouter {
 
       if (data && !error) {
         this.state.user = { ...data, passportCode: data.codigo_pasaporte };
-        await this.loadVisitsFromSupabase(data.id);
-        await this.loadChromesFromSupabase(data.id);
+        // syncWithSupabase carga visitas + cromos y sube lo que falte en la nube
+        await this.syncWithSupabase();
         this.saveLocalState();
         this.showToast(`Bienvenido de vuelta, ${data.nickname}`);
         return true;
@@ -260,18 +294,77 @@ class AppRouter {
 
   // Sincronizar visitas desde Supabase
   async syncWithSupabase() {
-    if (!this.state.user || !this.state.user.id) return;
+    if (!hasSession(this.state.user)) return;
     try {
-      await this.loadVisitsFromSupabase(this.state.user.id);
-      await this.loadChromesFromSupabase(this.state.user.id);
+      const visitRows = await this.loadVisitsFromSupabase(this.state.user.id);
+      const cromoRows = await this.loadChromesFromSupabase(this.state.user.id);
+      // Auto-reparado: si ambas lecturas fueron OK, subir a la nube los
+      // sellos/estampas que existen en este dispositivo pero no en Supabase
+      // (p. ej. registrados con la sesión rota anterior, cuando id=0 se
+      // trataba como "sin nube"). Solo sube lo que FALTA (sin duplicar).
+      if (Array.isArray(visitRows) && Array.isArray(cromoRows)) {
+        await this.reconcileMissingRows(visitRows, cromoRows);
+      }
     } catch (e) {
       console.warn("Sincronización diferida:", e);
     }
   }
 
-  // Cargar visitas registradas de la tabla visitas_estaciones
+  // Sube a la nube sellos/estampas locales ausentes en Supabase.
+  // Nunca inserta filas que ya existen: se calcula la diferencia por código.
+  async reconcileMissingRows(visitRows, cromoRows) {
+    if (!supabase || !hasCloudUser(this.state.user)) return;
+
+    const userId = this.state.user.id;
+    const cloudVisits = new Set(visitRows.map(r => r.stand_codigo));
+    const cloudCromos = new Set(cromoRows.map(r => r.stand_codigo));
+    let failed = 0;
+
+    for (const stand of this.standsList) {
+      const stamp = this.state.stamps[stand.id];
+      if (stamp && stamp.unlocked && !cloudVisits.has(stand.code)) {
+        const ok = await this.cloudWrite(
+          supabase
+            .from('visitas_estaciones')
+            .insert([{
+              usuario_id: userId,
+              stand_codigo: stand.code,
+              metodo_ingreso: stamp.metodoIngreso === 'qr' ? 'qr' : 'manual',
+              fecha_visita: stamp.unlockedAt || new Date().toISOString(),
+              valoracion: stamp.valoracion ?? null
+            }]),
+          `sync visita ${stand.code}`
+        );
+        if (!ok) failed++;
+      }
+
+      const cromo = this.state.cromos[stand.id];
+      if (cromo && cromo.found && !cloudCromos.has(stand.code)) {
+        const ok = await this.cloudWrite(
+          supabase
+            .from('cromos_secretos')
+            .insert([{
+              usuario_id: userId,
+              stand_codigo: stand.code,
+              metodo_ingreso: cromo.metodoIngreso === 'qr' ? 'qr' : 'manual',
+              fecha_encuentro: cromo.foundAt || new Date().toISOString()
+            }]),
+          `sync cromo ${stand.code}`
+        );
+        if (!ok) failed++;
+      }
+    }
+
+    if (failed) {
+      console.error(`Sync a nube: ${failed} fila(s) no pudieron subirse.`);
+    }
+  }
+
+  // Cargar visitas registradas de la tabla visitas_estaciones.
+  // Devuelve las filas leídas o null si no se pudo verificar (sin conexión,
+  // error, sesión local): null hace que syncWithSupabase NO intente subir nada.
   async loadVisitsFromSupabase(userId) {
-    if (!supabase || !userId || String(userId).startsWith("local-")) return;
+    if (!supabase || !isCloudId(userId)) return null;
 
     try {
       const { data, error } = await supabase
@@ -279,7 +372,11 @@ class AppRouter {
         .select('*')
         .eq('usuario_id', userId);
 
-      if (data && !error) {
+      if (error) {
+        console.warn("Aviso al consultar visitas_estaciones:", error.message);
+        return null;
+      }
+      if (data) {
         data.forEach(v => {
           // El stand se identifica por su código único (ej. STAND01)
           const standObj = this.standsList.find(s => s.code === v.stand_codigo);
@@ -294,15 +391,19 @@ class AppRouter {
           };
         });
         this.saveLocalState();
+        return data;
       }
+      return null;
     } catch (e) {
       console.warn("Aviso al consultar visitas_estaciones:", e);
+      return null;
     }
   }
 
-  // Cargar cromos secretos encontrados (tabla cromos_secretos)
+  // Cargar cromos secretos encontrados (tabla cromos_secretos).
+  // Devuelve las filas leídas o null si no se pudo verificar (ver loadVisits).
   async loadChromesFromSupabase(userId) {
-    if (!supabase || !userId || String(userId).startsWith("local-")) return;
+    if (!supabase || !isCloudId(userId)) return null;
 
     try {
       const { data, error } = await supabase
@@ -310,7 +411,11 @@ class AppRouter {
         .select('*')
         .eq('usuario_id', userId);
 
-      if (data && !error) {
+      if (error) {
+        console.warn("Aviso al consultar cromos_secretos:", error.message);
+        return null;
+      }
+      if (data) {
         data.forEach(c => {
           // El stand se identifica por su código único (ej. STAND01)
           const standObj = this.standsList.find(s => s.code === c.stand_codigo);
@@ -322,9 +427,12 @@ class AppRouter {
           };
         });
         this.saveLocalState();
+        return data;
       }
+      return null;
     } catch (e) {
       console.warn("Aviso al consultar cromos_secretos:", e);
+      return null;
     }
   }
 
@@ -341,17 +449,16 @@ class AppRouter {
       existing.metodoIngreso = 'qr';
       this.saveLocalState();
 
-      if (supabase && this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+      if (supabase && hasCloudUser(this.state.user)) {
         const standObj = this.standsList.find(s => s.id === standId);
-        try {
-          await supabase
+        await this.cloudWrite(
+          supabase
             .from('cromos_secretos')
             .update({ metodo_ingreso: 'qr' })
             .eq('usuario_id', this.state.user.id)
-            .eq('stand_codigo', standObj ? standObj.code : standId);
-        } catch (e) {
-          console.warn("Aviso al actualizar metodo_ingreso del cromo:", e);
-        }
+            .eq('stand_codigo', standObj ? standObj.code : standId),
+          "update metodo_ingreso del cromo"
+        );
       }
       return true;
     }
@@ -366,20 +473,19 @@ class AppRouter {
     this.saveLocalState();
 
     // Persistir en Supabase si el usuario tiene ID real (no local)
-    if (supabase && this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+    if (supabase && hasCloudUser(this.state.user)) {
       const standObj = this.standsList.find(s => s.id === standId);
-      try {
-        await supabase
+      await this.cloudWrite(
+        supabase
           .from('cromos_secretos')
           .insert([{
             usuario_id: this.state.user.id,
             stand_codigo: standObj ? standObj.code : standId,
             metodo_ingreso: metodo,
             fecha_encuentro: chromeData.foundAt
-          }]);
-      } catch (e) {
-        console.warn("Aviso al persistir cromo en Supabase:", e);
-      }
+          }]),
+        "insert cromo"
+      );
     }
 
     return true;
@@ -409,17 +515,16 @@ class AppRouter {
       existing.metodoIngreso = 'qr';
       this.saveLocalState();
 
-      if (supabase && this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+      if (supabase && hasCloudUser(this.state.user)) {
         const standObj = this.standsList.find(s => s.id === standId);
-        try {
-          await supabase
+        await this.cloudWrite(
+          supabase
             .from('visitas_estaciones')
             .update({ metodo_ingreso: 'qr' })
             .eq('usuario_id', this.state.user.id)
-            .eq('stand_codigo', standObj ? standObj.code : standId);
-        } catch (e) {
-          console.warn("Aviso al actualizar metodo_ingreso:", e);
-        }
+            .eq('stand_codigo', standObj ? standObj.code : standId),
+          "update metodo_ingreso de la visita"
+        );
       }
       return true;
     }
@@ -447,28 +552,29 @@ class AppRouter {
     }
 
     // Persistir visita en Supabase si el usuario tiene ID real (no local)
-    if (supabase && this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+    if (supabase && hasCloudUser(this.state.user)) {
       // El stand viaja por su código único (FK a stands.id_stand, ej. STAND01)
       const standObj = this.standsList.find(s => s.id === standId);
 
-      try {
-        await supabase
+      await this.cloudWrite(
+        supabase
           .from('visitas_estaciones')
           .insert([{
             usuario_id: this.state.user.id,
             stand_codigo: standObj ? standObj.code : standId,
             metodo_ingreso: metodo,
             fecha_visita: stampData.unlockedAt
-          }]);
+          }]),
+        "insert visita"
+      );
 
-        await supabase
+      await this.cloudWrite(
+        supabase
           .from('usuarios')
           .update({ progreso, rango_actual })
-          .eq('id', this.state.user.id);
-
-      } catch (e) {
-        console.warn("Aviso al persistir en Supabase:", e);
-      }
+          .eq('id', this.state.user.id),
+        "update progreso/rango del usuario"
+      );
     }
 
     // RUTA COMPLETA: al conseguir los 5 sellos se despliega el agradecimiento
@@ -492,20 +598,21 @@ class AppRouter {
     stamp.valoracion = stars;
     this.saveLocalState();
 
-    if (supabase && this.state.user && this.state.user.id && !String(this.state.user.id).startsWith("local-")) {
+    let cloudSaved = true;
+    if (supabase && hasCloudUser(this.state.user)) {
       const standObj = this.standsList.find(s => s.id === standId);
-      try {
-        await supabase
+      cloudSaved = await this.cloudWrite(
+        supabase
           .from('visitas_estaciones')
           .update({ valoracion: stars })
           .eq('usuario_id', this.state.user.id)
-          .eq('stand_codigo', standObj ? standObj.code : standId);
-      } catch (e) {
-        console.warn("Aviso al persistir valoración:", e);
-      }
+          .eq('stand_codigo', standObj ? standObj.code : standId),
+        "update valoración"
+      );
     }
 
-    this.showToast(`Valoración guardada: ${stars}/5`);
+    // Si la nube falló, cloudWrite ya mostró el toast de error
+    if (cloudSaved) this.showToast(`Valoración guardada: ${stars}/5`);
   }
 
   getCompletedCount() {

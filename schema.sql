@@ -13,6 +13,10 @@
 -- ============================================================================
 
 -- 1. Tabla de Usuarios ------------------------------------------------------
+-- NOTA: id DEBE ser autoincremental real (SERIAL/IDENTITY). Si la tabla se
+-- crea a mano desde el dashboard de Supabase, marcar "Auto Increment":
+-- un id que devuelva 0 hace que el frontend (JS trata 0 como falso) deje de
+-- persistir visitas y cromos. Ver fix-persistencia-visitas.sql.
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     nickname VARCHAR(50) NOT NULL,
@@ -45,7 +49,9 @@ CREATE TABLE visitas_estaciones (
     fecha_visita TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     valoracion INT CHECK (valoracion BETWEEN 1 AND 5),   -- estrellas 1-5 (opcional hasta Fase B)
     metodo_ingreso VARCHAR(10) CHECK (metodo_ingreso IN ('qr', 'manual')),  -- Plan B → 'manual'
-    trivia_correcta BOOLEAN DEFAULT false                -- resultado real de la trivia pedagógica
+    trivia_correcta BOOLEAN DEFAULT false,               -- resultado real de la trivia pedagógica
+    -- Un sello por usuario+stand: garantía de dominio y sincronización idempotente
+    CONSTRAINT uq_visitas_usuario_stand UNIQUE (usuario_id, stand_codigo)
 );
 
 -- Índices para las consultas del panel de estadísticas (torta y dona)
@@ -87,6 +93,8 @@ CREATE POLICY public_stands_select ON stands FOR SELECT USING (true);
 
 CREATE POLICY public_visitas_select ON visitas_estaciones FOR SELECT USING (true);
 CREATE POLICY public_visitas_insert ON visitas_estaciones FOR INSERT WITH CHECK (true);
+-- UPDATE hace falta: valoración por estrellas (rateStamp) y upgrade manual→qr
+CREATE POLICY public_visitas_update ON visitas_estaciones FOR UPDATE USING (true) WITH CHECK (true);
 
 CREATE POLICY public_cromos_select ON cromos_secretos FOR SELECT USING (true);
 CREATE POLICY public_cromos_insert ON cromos_secretos FOR INSERT WITH CHECK (true);
